@@ -192,12 +192,12 @@ PrefabInstance:
     - target: {fileID: 1493478296542953961, guid: bdd73859451c27b44b25ad6e8269bf0c,
         type: 3}
       propertyPath: maxJointTorque
-      value: 459
+      value: 201
       objectReference: {fileID: 0}
     - target: {fileID: 1493478296542953961, guid: bdd73859451c27b44b25ad6e8269bf0c,
         type: 3}
       propertyPath: jointDamping
-      value: 4.15
+      value: 0.94
       objectReference: {fileID: 0}
     - target: {fileID: 1493478296688561398, guid: bdd73859451c27b44b25ad6e8269bf0c,
         type: 3}
