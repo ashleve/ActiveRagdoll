@@ -15,12 +15,13 @@ public class SlaveController : MonoBehaviour    // Slave = Ragdoll
 
     private SpawnInfo slaveSpawnInfo;
 
+    private GoingRagdollTimer timer;
+
     public int numberOfCurrentCollisions;
 
     public bool gettingUp;
-
-    private Timer aTimer;
     private float interpolationStep;
+
 
     // PARAMETERS
     private float forceInterpolationInterrval = 4f; // Time it takes for a slave to regain it's full strength (in seconds)
@@ -28,7 +29,7 @@ public class SlaveController : MonoBehaviour    // Slave = Ragdoll
     private float toContactLerp = 15f;  // Determines how fast the character loses strength when in contact
     private float fromContactLerp = 0.1f;   // Determines how fast the character gains strength after freed from contact
 
-    private float contactForce = 0.1f;  // Minimal strength during collision
+    private float contactForce = 0.1f;  // Minimal force strength during collision
     private float contactTorque = 0.1f;    // Minimal torque strength during collision
 
 
@@ -42,15 +43,13 @@ public class SlaveController : MonoBehaviour    // Slave = Ragdoll
 
         slaveSpawnInfo = new SpawnInfo(this.transform);
 
+        timer = new GoingRagdollTimer(this);
+
         numberOfCurrentCollisions = 0;
 
         gettingUp = false;
 
         interpolationStep = 0f;
-
-        aTimer = new Timer();
-        aTimer.Elapsed += new ElapsedEventHandler(EnableAnimFollowWithTimer);
-        aTimer.AutoReset = false;
     }
 
     // Unity method for physics update
@@ -75,52 +74,29 @@ public class SlaveController : MonoBehaviour    // Slave = Ragdoll
 
     }
 
-    public void Respawn()
-    {
-        this.transform.localPosition = slaveSpawnInfo.localPosition;
-
-        Transform[] transforms = this.GetComponentsInChildren<Transform>();
-        for (int i = 0; i < slaveSpawnInfo.childrenLocalPositions.Length; i++)
-        {
-            Transform child = transforms[i];
-            child.localPosition = slaveSpawnInfo.childrenLocalPositions[i];
-            Rigidbody rb = child.GetComponent<Rigidbody>();
-            if(rb != null)
-            {
-                child.GetComponent<Rigidbody>().velocity = Vector3.zero;
-                child.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-            }
-        }
-
-
-    }
-
+    // Sets all forces to zero for time given in seconds
     public void GoRagdoll(int time)
     {
-        DisableAnimFollow();
-        aTimer.Stop();
-        aTimer.Interval = time * 1000;
-        aTimer.Enabled = true;
-        aTimer.Start();
+        timer.GoRagdoll(time);
     }
 
-    private void EnableAnimFollowWithTimer(object source, ElapsedEventArgs e)
-    {
-        EnableAnimFollow();
-        interpolationStep = 0f;
-        gettingUp = true;
-        animFollow.forceCoefficient = 0f;
-        animFollow.torqueCoefficient = 0f;
-    }
-
-    private void EnableAnimFollow()
+    public void EnableAnimFollow()
     {
         animFollow.isAlive = true;
     }
 
-    private void DisableAnimFollow()
+    public void DisableAnimFollow()
     {
         animFollow.isAlive = false;
+    }
+
+    // Sets forces to zero. After calling this function ragdoll will gradually regain strength
+    public void ResetForces()
+    {
+        animFollow.forceCoefficient = 0f;
+        animFollow.torqueCoefficient = 0f;
+        interpolationStep = 0f;
+        gettingUp = true;
     }
 
     private void IncrementInterpolationStep()
@@ -151,6 +127,7 @@ public class SlaveController : MonoBehaviour    // Slave = Ragdoll
         return (float)(0.0001804733 + 0.7707137 * x - 8.36575 * Mathf.Pow(x, 2) + 30.10769 * Mathf.Pow(x, 3) - 42.97538 * Mathf.Pow(x, 4) + 21.46389 * Mathf.Pow(x, 5));
     }
 
+    // Drop all cubes that are attached to ragdoll
     public void DropTargets()
     {
         CollisionDetector[] cdArr = this.GetComponentsInChildren<CollisionDetector>();
@@ -158,8 +135,24 @@ public class SlaveController : MonoBehaviour    // Slave = Ragdoll
             cd.dropTarget();
     }
 
-}
+    public void Respawn()
+    {
+        this.transform.localPosition = slaveSpawnInfo.localPosition;
 
+        Transform[] transforms = this.GetComponentsInChildren<Transform>();
+        for (int i = 0; i < slaveSpawnInfo.childrenLocalPositions.Length; i++)
+        {
+            Transform child = transforms[i];
+            child.localPosition = slaveSpawnInfo.childrenLocalPositions[i];
+            Rigidbody rb = child.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                child.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                child.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+            }
+        }
+    }
+}
 
 
 [System.Serializable]
@@ -175,5 +168,35 @@ public class SpawnInfo
         childrenLocalPositions = new Vector3[transforms.Length];
         for (int i = 0; i < transforms.Length; i++)
             childrenLocalPositions[i] = transforms[i].localPosition;
+    }
+}
+
+
+public class GoingRagdollTimer
+{
+    private SlaveController slaveController;
+    private Timer timer;
+
+    public GoingRagdollTimer(SlaveController slaveController)
+    {
+        this.slaveController = slaveController;
+        timer = new Timer();
+        timer.Elapsed += new ElapsedEventHandler(EnableAnimFollow);
+        timer.AutoReset = false;
+    }
+
+    private void EnableAnimFollow(object source, ElapsedEventArgs e)
+    {
+        slaveController.ResetForces();
+        slaveController.EnableAnimFollow();
+    }
+
+    public void GoRagdoll(int time)
+    {
+        slaveController.DisableAnimFollow();
+        timer.Stop();
+        timer.Interval = time * 1000;
+        timer.Enabled = true;
+        timer.Start();
     }
 }
