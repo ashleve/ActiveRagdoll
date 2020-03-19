@@ -45,15 +45,11 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
         else DisableIK();
     }
 
-    private int updateCounter = 0;
     // Unity method for physics update
     void FixedUpdate()
     {
-        updateCounter++;
-        if (updateCounter % 2 == 0) return;
-
         closestTarget = targetManager.GetClosestTarget();
-        //Debug.DrawRay(this.transform.position, closestTarget.position - this.transform.position);
+        Debug.DrawRay(this.transform.position, closestTarget.transform.position - this.transform.position);
 
         //if (slaveController.interpolationStep < 1) return;
 
@@ -61,16 +57,15 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
         {
             if (!IKEnabled) 
                 EnableIK();
-            leftArmTarget.MoveTowards(closestTarget.transform.position, 0.04f);
-            rightArmTarget.MoveTowards(closestTarget.transform.position, 0.04f);
+            leftArmTarget.MoveTowards(closestTarget.transform.position, 0.02f);
+            rightArmTarget.MoveTowards(closestTarget.transform.position, 0.02f);
         }
         else
         {
-
             if (!leftArmTarget.isAtSpawnPosition())
             {
-                leftArmTarget.MoveTowardsSpawnPosition(0.04f);
-                rightArmTarget.MoveTowardsSpawnPosition(0.04f);
+                leftArmTarget.MoveTowardsSpawnPosition(0.02f);
+                rightArmTarget.MoveTowardsSpawnPosition(0.02f);
             }
             else if (IKEnabled)
                 DisableIK();
