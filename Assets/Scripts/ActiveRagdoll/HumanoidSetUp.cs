@@ -13,6 +13,7 @@ public class HumanoidSetUp : MonoBehaviour
     private AnimationFollowing animFollow;
     private Animator anim;
     private TargetManager targetManager;
+    private PlayerController playerController;
 
 
     // Awake() is called before all Start() methods
@@ -36,6 +37,8 @@ public class HumanoidSetUp : MonoBehaviour
         targetManager = this.GetComponentInParent<TargetManager>();
         if (targetManager == null) Debug.LogError("TargetManager not found.");
 
+        playerController = this.GetComponent<PlayerController>();
+        if (playerController == null) Debug.LogError("PlayerController not found.");
     }
 
     public Transform GetMasterRoot()
@@ -71,6 +74,11 @@ public class HumanoidSetUp : MonoBehaviour
     public TargetManager GetTargetManager()
     {
         return targetManager;
+    }
+
+    public PlayerController GetPlayerController()
+    {
+        return playerController;
     }
 
 }

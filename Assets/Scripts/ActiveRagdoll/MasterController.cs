@@ -13,6 +13,7 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
     private Transform masterRoot;
     private AnimationFollowing animFollow;
     private SlaveController slaveController;
+    private PlayerController playerController;
     private RigBuilder rigBuilder;
     private RigTarget leftArmTarget;
     private RigTarget rightArmTarget;
@@ -32,6 +33,7 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
         animFollow = setUp.GetAnimationFollowing();
         slaveController = setUp.GetSlaveController();
         targetManager = setUp.GetTargetManager();
+        playerController = setUp.GetPlayerController();
 
         rigBuilder = this.GetComponent<RigBuilder>();   // we need this for disabling IK
         RigTarget[] rigs = this.GetComponentsInChildren<RigTarget>();
@@ -48,8 +50,14 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
     // Unity method for physics update
     void FixedUpdate()
     {
-        closestTarget = targetManager.GetClosestTarget();
+        closestTarget = targetManager.GetClosestTarget(this.transform.position);
+
+        if (closestTarget == null) return;
+
+
         Debug.DrawRay(this.transform.position, closestTarget.transform.position - this.transform.position);
+        playerController.RotateTowards(closestTarget.transform);
+        playerController.MoveForward();
 
         //if (slaveController.interpolationStep < 1) return;
 

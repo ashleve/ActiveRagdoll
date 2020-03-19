@@ -84,14 +84,15 @@ public class TargetManager : MonoBehaviour
         return target;
     }
 
-    public Target GetClosestTarget()
+    public Target GetClosestTarget(Vector3 position)
     {
+        if (allTargets.Length == 0) return null;
 
-        float minDist = (allTargets[0].transform.position - this.transform.position).magnitude;
+        float minDist = (allTargets[0].transform.position - position).magnitude;
         int index = 0;
         for (int i = 1; i < allTargets.Length; i++)
         {
-            float dist = (allTargets[i].transform.position - this.transform.position).magnitude;
+            float dist = (allTargets[i].transform.position - position).magnitude;
             if (dist < minDist)
             {
                 minDist = dist;
