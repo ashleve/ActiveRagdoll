@@ -18,7 +18,7 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
     private RigTarget rightArmTarget;
 
     private TargetManager targetManager;
-    public Transform closestTarget;
+    public Target closestTarget;
 
     private bool IKEnabled = false;
     public bool targetAttached = false;
@@ -52,7 +52,7 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
         updateCounter++;
         if (updateCounter % 2 == 0) return;
 
-        closestTarget = GetClosestTarget();
+        closestTarget = targetManager.GetClosestTarget();
         //Debug.DrawRay(this.transform.position, closestTarget.position - this.transform.position);
 
         //if (slaveController.interpolationStep < 1) return;
@@ -61,8 +61,8 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
         {
             if (!IKEnabled) 
                 EnableIK();
-            leftArmTarget.MoveTowards(closestTarget.position, 0.06f);
-            rightArmTarget.MoveTowards(closestTarget.position, 0.06f);
+            leftArmTarget.MoveTowards(closestTarget.transform.position, 0.04f);
+            rightArmTarget.MoveTowards(closestTarget.transform.position, 0.04f);
         }
         else
         {
@@ -76,24 +76,6 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
                 DisableIK();
         }
 
-    }
-
-    private Transform GetClosestTarget()
-    {
-
-        float minDist = (targetManager.allTargets[0].position - this.transform.position).magnitude;
-        int index = 0;
-        for(int i = 1; i<targetManager.allTargets.Length; i++)
-        {
-            float dist = (targetManager.allTargets[i].position - this.transform.position).magnitude;
-            if(dist < minDist)
-            {
-                minDist = dist;
-                index = i;
-            }
-        }
-
-        return targetManager.allTargets[index];
     }
 
     public void DisableIK()

@@ -5,22 +5,19 @@ using UnityEngine;
 public class Target : MonoBehaviour
 {
 
-    GameObject[] observers;
+    public List<GameObject> observers;
 
-    public string STATE = "FREE";
     public int numOfAttached = 0;
 
-    private int spawnRangeX = 20;
-    private int spawnRangeY = 6;
-    private int spawnRangeZ = 20;
-
-    private bool fallen = false;
+    private float spawnRangeX = 20;
+    private float spawnRangeY = 6;
+    private float spawnRangeZ = 20;
 
 
     // Awake() is called before all Start() methods
     void Awake()
     {
-        //observers = this.GetComponentsInParent<GameObject>();
+        observers = new List<GameObject>();
     }
 
     // Unity method for physics update
@@ -52,6 +49,13 @@ public class Target : MonoBehaviour
         foreach (GameObject agent in observers)
             ;
             //agent.UpdateTargetStatus();
+    }
+
+    public void SetSpawnRange(float x, float y, float z)
+    {
+        spawnRangeX = x;
+        spawnRangeY = y;
+        spawnRangeZ = z;
     }
 
 

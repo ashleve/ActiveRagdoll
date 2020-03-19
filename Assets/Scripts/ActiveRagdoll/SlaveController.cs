@@ -99,17 +99,6 @@ public class SlaveController : MonoBehaviour    // Slave = Ragdoll
         gettingUp = true;
     }
 
-    private void IncrementInterpolationStep()
-    {
-        if (interpolationStep >= 1f)
-        {
-            gettingUp = false;
-            return;
-        }
-
-        interpolationStep += Time.fixedDeltaTime * 1f / forceInterpolationInterrval;
-    }
-
     private void LooseStrength()
     {
         animFollow.forceCoefficient = Mathf.Lerp(animFollow.forceCoefficient, contactForce, toContactLerp * Time.fixedDeltaTime);
@@ -120,6 +109,17 @@ public class SlaveController : MonoBehaviour    // Slave = Ragdoll
     {
         animFollow.forceCoefficient = Mathf.Lerp(animFollow.forceCoefficient, 1f, fromContactLerp * Time.fixedDeltaTime);
         animFollow.torqueCoefficient = Mathf.Lerp(animFollow.torqueCoefficient, 1f, fromContactLerp * Time.fixedDeltaTime);
+    }
+
+    private void IncrementInterpolationStep()
+    {
+        if (interpolationStep >= 1f)
+        {
+            gettingUp = false;
+            return;
+        }
+
+        interpolationStep += Time.fixedDeltaTime * 1f / forceInterpolationInterrval;
     }
 
     private float InterpolateForceCoefficient(float x)

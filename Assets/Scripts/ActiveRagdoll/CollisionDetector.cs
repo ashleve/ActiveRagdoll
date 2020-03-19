@@ -34,12 +34,9 @@ public class CollisionDetector : MonoBehaviour
         {
             slaveController.numberOfCurrentCollisions++;
 
-            //if (STATE != "CONNECTED" && collision.gameObject.tag == targetTag && this.gameObject.tag == attachTargetToObjectWithTag && collision.gameObject.GetComponent<Target>().STATE == "FREE")
             if (STATE != "CONNECTED"  && collision.transform.tag == TARGET_TAG && this.transform.tag == ATTACH_TARGET_TO_OBJECT_WITH_TAG && collision.gameObject.GetComponent<Target>().numOfAttached < 2)
             {
-                //print("connected");
-                STATE = "CONNECTED";
-                //collision.gameObject.GetComponent<Target>().STATE = "TAKEN";
+
                 collision.gameObject.GetComponent<Target>().numOfAttached += 1;
 
                 if (!masterController.targetAttached)
@@ -53,6 +50,7 @@ public class CollisionDetector : MonoBehaviour
                 //hingeJoint.breakForce = 1000;
                 //hingeJoint.breakTorque = 1000;
                 hingeJoint.connectedBody = otherBody;
+                STATE = "CONNECTED";
             }
 
         }

@@ -6,6 +6,7 @@ public class TargetManager : MonoBehaviour
 {
 
     public GameObject Target;
+
     public int numOfTargets = 5;
     private int spawnRangeX = 20;
     private int spawnRangeY = 6;
@@ -13,7 +14,7 @@ public class TargetManager : MonoBehaviour
 
     private GameObject targetContainer;
 
-    public Transform[] allTargets;
+    public Target[] allTargets;
 
 
     // Start is called before the first frame update
@@ -22,8 +23,9 @@ public class TargetManager : MonoBehaviour
         targetContainer = new GameObject();
         targetContainer.transform.SetParent(this.transform);
         targetContainer.transform.localPosition = new Vector3(0, 0, 0);
+        targetContainer.name = "TargetContainer";
 
-        spawnTargets();
+        SpawnTargets();
     }
 
     // Unity method for physics update
@@ -34,25 +36,29 @@ public class TargetManager : MonoBehaviour
 
 
 
-    public void spawnTargets()
+    public void SpawnTargets()
     {
-        allTargets = new Transform[numOfTargets];
+        allTargets = new Target[numOfTargets];
         for (int i=0; i<numOfTargets; i++)
         {
             GameObject obj = Instantiate(Target, Vector3.zero, Quaternion.identity, targetContainer.transform);  // spawn target in container
-            obj.GetComponent<Target>().Respawn();
-            allTargets[i] = obj.transform;
+            Target target = obj.GetComponent<Target>();
+            target.SetSpawnRange(spawnRangeX, spawnRangeY, spawnRangeZ);
+            target.Respawn();
+            allTargets[i] = target;
         }
     }
     
     public void RespawnTargets()
     {
-        /*        foreach(Transform target in allTargets)
-                {
-                    target.GetComponent<Target>().Respawn();
-                }*/
+/*
+        foreach (Transform target in allTargets)
+        {
+            target.GetComponent<Target>().Respawn();
+        }
+*/
         DestroyTargets();
-        spawnTargets();
+        SpawnTargets();
     }
 
     public void DestroyTargets()
@@ -61,13 +67,39 @@ public class TargetManager : MonoBehaviour
             Destroy(target.gameObject);
     }
 
-    public void hideTarget(int index)
+    public Target GetRandomTarget()
     {
-        allTargets[index].position = new Vector3(-100, -100, -100);
-        //allTargets[index].GetComponent<Renderer>().enabled = false;
+        return allTargets[Random.Range(0, allTargets.Length - 1)];
     }
 
+    public Target GetRandomFreeTarget()
+    {
+        Target target;
+        while (true)
+        {
+            target = allTargets[Random.Range(0, allTargets.Length - 1)];
+            if (target.observers.Count == 0) 
+                break;
+        }
+        return target;
+    }
 
+    public Target GetClosestTarget()
+    {
 
+        float minDist = (allTargets[0].transform.position - this.transform.position).magnitude;
+        int index = 0;
+        for (int i = 1; i < allTargets.Length; i++)
+        {
+            float dist = (allTargets[i].transform.position - this.transform.position).magnitude;
+            if (dist < minDist)
+            {
+                minDist = dist;
+                index = i;
+            }
+        }
+
+        return allTargets[index];
+    }
 
 }
