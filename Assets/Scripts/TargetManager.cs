@@ -14,7 +14,7 @@ public class TargetManager : MonoBehaviour
 
     private GameObject targetContainer;
 
-    public Target[] allTargets;
+    private Target[] allTargets;
 
 
     // Start is called before the first frame update
