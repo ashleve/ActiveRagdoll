@@ -1,5 +1,5 @@
 # UnityActiveRagdoll
-### Implementing active ragdoll from scratch in Unity
+### Implementing active ragdoll for humanoid characters from scratch in Unity
 
 
 ![](gifs/activeRagdoll.gif)
