@@ -30,9 +30,8 @@ public class FlyCamera : MonoBehaviour
     public bool limitYRotation = false;
 
     private Vector2 cameraRotation;
-
-
     private bool isMoving;
+
 
     // Use this for initialization
     private void Start()
@@ -52,8 +51,14 @@ public class FlyCamera : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            isMoving = !isMoving;
+            isMoving = true;
         }
+
+        if (Input.GetKey(KeyCode.LeftAlt))
+        {
+            isMoving = false;
+        }
+
 
         if (!isMoving) return;
 
@@ -97,5 +102,6 @@ public class FlyCamera : MonoBehaviour
         {
             transform.position -= transform.up * climbSpeed * Time.deltaTime;
         }
+
     }
 }
