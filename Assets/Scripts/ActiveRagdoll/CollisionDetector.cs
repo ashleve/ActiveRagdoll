@@ -32,7 +32,8 @@ public class CollisionDetector : MonoBehaviour
     {
         if (collision.transform.tag != "FLOOR" && collision.transform.GetComponentInParent<SlaveController>() != slaveController)
         {
-            slaveController.numberOfCurrentCollisions++;
+           /* if(&& collision.transform.tag == TARGET_TAG)
+            slaveController.numberOfCurrentCollisions++;*/
 
             if (STATE != "CONNECTED"  && collision.transform.tag == TARGET_TAG && this.transform.tag == ATTACH_TARGET_TO_OBJECT_WITH_TAG && collision.gameObject.GetComponent<Target>().numOfAttached < 2)
             {
@@ -51,6 +52,9 @@ public class CollisionDetector : MonoBehaviour
                 //hingeJoint.breakTorque = 1000;
                 hingeJoint.connectedBody = otherBody;
                 STATE = "CONNECTED";
+
+                masterController.numberOfAttachments += 1;
+                masterController.DisableIK();
             }
 
         }

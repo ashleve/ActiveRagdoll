@@ -37,12 +37,17 @@ public class AnimationFollowing : MonoBehaviour
     // ALL ADJUSTABLE PARAMETERS
     private bool useGravity = true;
 
+    private float fixedDeltaTime = 1f / 0.01f;
+
     [Range(0f, 340f)] private float angularDrag = 0f; // Rigidbodies angular drag.
     [Range(0f, 2f)] private float drag = 0.1f; // Rigidbodies drag.
     [Range(0f, 1000f)] private float maxAngularVelocity = 1000f; // Rigidbodies maxAngularVelocity.
 
-    [Range(0f, 1500f)] public float PForce = 30f;
-    [Range(0f, 1500f)] public float DForce = 0.01f;
+/*    [Range(0f, 1500f)] public float PForce = 30f;
+    [Range(0f, 1500f)] public float DForce = 0.01f;*/
+
+    [Range(0f, 160f)] public float PForce = 30f;
+    [Range(0f, .064f)] public float DForce = 0.01f;
 
     [Range(0f, 100f)] public float maxForce = 10f; // Limits the force
     [Range(0f, 5000f)] public float maxJointTorque = 10000f; // Limits the force
@@ -151,7 +156,8 @@ public class AnimationFollowing : MonoBehaviour
             // APPLY FORCE
             Vector3 masterRigidTransformsWCOM = masterRigidTransforms[i].position + masterRigidTransforms[i].rotation * rigidbodiesPosToCOM[i];
             Vector3 forceError = masterRigidTransformsWCOM - rb.worldCenterOfMass;
-            Vector3 forceSignal = PDControl(PForce, DForce, forceError, ref forceLastError[i]);
+            //Vector3 forceSignal = PDControl(PForce, DForce, forceError, ref forceLastError[i]);
+            Vector3 forceSignal = PDControl(PForce, DForce, forceError, ref forceLastError[i], fixedDeltaTime);
             forceSignal = Vector3.ClampMagnitude(forceSignal, maxForce * maxForceProfile[i] * forceCoefficient);
             rb.AddForce(forceSignal, ForceMode.VelocityChange);
 
@@ -161,13 +167,21 @@ public class AnimationFollowing : MonoBehaviour
         }
     }
 
-    public Vector3 PDControl(float P, float D, Vector3 error, ref Vector3 lastError) // A Proportional Derivative Controller. Calculates the force that's applied to certain joint.
+/*    public Vector3 PDControl(float P, float D, Vector3 error, ref Vector3 lastError) // A Proportional Derivative Controller. Calculates the force that's applied to certain joint.
     {
         // This is the implemented algorithm:
         // error = slavePosition - masterPosition
         // derivativeOfError = error - lastError
         // force = (P * error + D * derivativeOfError) * frequencyOfPhysicsUpdate
         Vector3 signal = (P * error + D * (error - lastError)) * Time.fixedDeltaTime;
+        lastError = error;
+        return signal;
+    }*/
+
+    public Vector3 PDControl(float P, float D, Vector3 error, ref Vector3 lastError, float fixedDeltaTime) // A PD controller
+    {
+        // theSignal = P * (theError + D * theDerivative) This is the implemented algorithm.
+        Vector3 signal = P * (error + D * (error - lastError) * fixedDeltaTime);
         lastError = error;
         return signal;
     }

@@ -21,8 +21,15 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
     private TargetManager targetManager;
     public Target closestTarget;
 
+    public Transform centralPoint;
+
     private bool IKEnabled = false;
     public bool targetAttached = false;
+
+    public int numberOfAttachments;
+
+    private float rotationSpeed = 200f;
+    private float runSpeed = 3f;
 
 
     // Start is called before the first frame update
@@ -45,6 +52,8 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
 
         if (IKEnabled) EnableIK();
         else DisableIK();
+
+        numberOfAttachments = 0;
     }
 
     // Unity method for physics update
@@ -56,27 +65,52 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
 
 
         Debug.DrawRay(this.transform.position, closestTarget.transform.position - this.transform.position);
-        playerController.RotateTowards(closestTarget.transform);
-        playerController.MoveForward();
+        /*        playerController.RotateTowards(closestTarget.transform);
+                playerController.MoveForward();*/
 
-        //if (slaveController.interpolationStep < 1) return;
+        RotateTowards();
+        MoveForward();
 
-        if((this.transform.position - closestTarget.transform.position).magnitude < 4f && !targetAttached)
+
+        // HERE COMES THE SPAGHETTTIII I HAVE NO IDEA WHAT IM DOING
+
+        if (numberOfAttachments == 1)
         {
-            if (!IKEnabled) 
+            if (!IKEnabled)
                 EnableIK();
-            leftArmTarget.MoveTowards(closestTarget.transform.position, 0.02f);
-            rightArmTarget.MoveTowards(closestTarget.transform.position, 0.02f);
+            leftArmTarget.MoveTowards(closestTarget.transform.position, 0.01f);
+            rightArmTarget.MoveTowards(closestTarget.transform.position, 0.01f);
+            return;
         }
-        else
+
+
+        // move left hand
+        if (numberOfAttachments == 0 && (leftArmTarget.transform.position - centralPoint.position).magnitude < 1.1f)
         {
-            if (!leftArmTarget.isAtSpawnPosition())
+            if ((leftArmTarget.transform.position - closestTarget.transform.position).magnitude > 0.2f && (closestTarget.transform.position - leftArmTarget.transform.position).magnitude < 4f)
             {
-                leftArmTarget.MoveTowardsSpawnPosition(0.02f);
-                rightArmTarget.MoveTowardsSpawnPosition(0.02f);
+                if (!IKEnabled)
+                    EnableIK();
+                leftArmTarget.MoveTowards(closestTarget.transform.position, 0.01f);
             }
-            else if (IKEnabled)
-                DisableIK();
+        }
+
+        // move right hand
+        if (numberOfAttachments == 0 && (rightArmTarget.transform.position - centralPoint.position).magnitude < 1.1f)
+        {
+            if ((rightArmTarget.transform.position - closestTarget.transform.position).magnitude > 2f && (closestTarget.transform.position - rightArmTarget.transform.position).magnitude < 4f)
+            {
+                if (!IKEnabled)
+                    EnableIK();
+                rightArmTarget.MoveTowards(closestTarget.transform.position, 0.01f);
+            }
+        }
+
+        if (numberOfAttachments == 2)
+        {
+            leftArmTarget.transform.position = leftArmTarget.spawnPosition + new Vector3(0, 0.7f, 0);
+            if (!IKEnabled)
+                EnableIK();
         }
 
     }
@@ -102,6 +136,23 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
     public void TargetAttached(bool value)
     {
         targetAttached = value;
+    }
+
+    private void MoveForward()
+    {
+        transform.position += transform.forward * Time.fixedDeltaTime * runSpeed;
+    }
+
+    private void RotateTowards()
+    {
+        Vector3 newDirection = Vector3.RotateTowards(transform.forward, closestTarget.transform.position - transform.position, 0.04f, 5f);
+
+        // Calculate a rotation a step closer to the target and applies rotation to this object
+        Quaternion rot = Quaternion.LookRotation(newDirection);
+        Vector3 tmp = rot.eulerAngles;
+        tmp.x = transform.rotation.eulerAngles.x;
+        tmp.z = transform.rotation.eulerAngles.z;
+        transform.rotation = Quaternion.Euler(tmp);
     }
 
 }

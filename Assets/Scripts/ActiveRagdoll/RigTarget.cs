@@ -8,7 +8,7 @@ public class RigTarget : MonoBehaviour
     /// This is for controlling inverse kinematics.
     /// </summary>
 
-    private Vector3 spawnPosition;
+    public Vector3 spawnPosition;
 
 
     // Start is called before the first frame update
@@ -32,7 +32,7 @@ public class RigTarget : MonoBehaviour
         this.transform.localPosition += vec;
     }
 
-    public bool isAtSpawnPosition()
+    public bool IsAtSpawnPosition()
     {
         return (spawnPosition - this.transform.localPosition).magnitude < 0.1f;
     }
