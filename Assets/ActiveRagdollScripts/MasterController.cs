@@ -11,7 +11,7 @@ public class MasterController : MonoBehaviour
     /// </summary>
 
     public Animator anim;
-    private float rotationSpeed = 200f;
+    private float rotationSpeed = 0.01f;
     private float runSpeed = 3f;
     private float walkSpeed = 1.5f;
 
@@ -149,7 +149,7 @@ public class MasterController : MonoBehaviour
 
     private void RotateTowards()
     {
-        Vector3 newDirection = Vector3.RotateTowards(transform.forward, box.position - transform.position, 0.04f, 5f);
+        Vector3 newDirection = Vector3.RotateTowards(transform.forward, box.position - transform.position, rotationSpeed, 5f);
 
         // Draw a ray pointing at our target
         Debug.DrawRay(transform.position, box.position - transform.position, Color.red);
