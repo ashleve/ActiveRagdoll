@@ -37,8 +37,8 @@ public class HumanoidSetUp : MonoBehaviour
         targetManager = this.GetComponentInParent<TargetManager>();
         if (targetManager == null) Debug.LogError("TargetManager not found.");
 
-        playerController = this.GetComponent<PlayerController>();
-        if (playerController == null) Debug.LogError("PlayerController not found.");
+        //playerController = this.GetComponent<PlayerController>();
+        //if (playerController == null) Debug.LogError("PlayerController not found.");
     }
 
     public Transform GetMasterRoot()

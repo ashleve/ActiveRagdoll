@@ -59,7 +59,8 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
     // Unity method for physics update
     void FixedUpdate()
     {
-        closestTarget = targetManager.GetClosestTarget(this.transform.position);
+        if (closestTarget == null)
+            closestTarget = targetManager.GetClosestTarget(this.transform.position);
 
         if (closestTarget == null) return;
 
@@ -73,45 +74,81 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
 
 
         // HERE COMES THE SPAGHETTTIII I HAVE NO IDEA WHAT IM DOING
+        /*
+                if (numberOfAttachments == 1)
+                {
+                    if (!IKEnabled)
+                        EnableIK();
+                    leftArmTarget.MoveTowards(closestTarget.transform.position, 0.03f);
+                    rightArmTarget.MoveTowards(closestTarget.transform.position, 0.03f);
+                    return;
+                }
+
+
+                // move left hand
+                if (numberOfAttachments < 2 && (leftArmTarget.transform.position - centralPoint.position).magnitude < 1.1f)
+                {
+                    if ((leftArmTarget.transform.position - closestTarget.transform.position).magnitude > 0.2f && (closestTarget.transform.position - leftArmTarget.transform.position).magnitude < 4f)
+                    {
+                        if (!IKEnabled)
+                            EnableIK();
+                        leftArmTarget.MoveTowards(closestTarget.transform.position, 0.03f);
+                    }
+                }
+
+                // move right hand
+                if (numberOfAttachments < 2 && (rightArmTarget.transform.position - centralPoint.position).magnitude < 1.1f)
+                {
+                    if ((rightArmTarget.transform.position - closestTarget.transform.position).magnitude > 0.2f && (closestTarget.transform.position - rightArmTarget.transform.position).magnitude < 4f)
+                    {
+                        if (!IKEnabled)
+                            EnableIK();
+                        rightArmTarget.MoveTowards(closestTarget.transform.position, 0.03f);
+                    }
+                }
+
+                if (numberOfAttachments == 2)
+                {
+                    leftArmTarget.transform.position = leftArmTarget.spawnPosition + new Vector3(0, 0.7f, 0);
+                    if (!IKEnabled)
+                        EnableIK();
+                }*/
 
         if (numberOfAttachments == 1)
         {
-            if (!IKEnabled)
-                EnableIK();
-            leftArmTarget.MoveTowards(closestTarget.transform.position, 0.01f);
-            rightArmTarget.MoveTowards(closestTarget.transform.position, 0.01f);
+            EnableIK();
+            MoveLeftHandTowardsBox();
+            MoveRightHandTowardsBox();
             return;
         }
 
 
-        // move left hand
-        if (numberOfAttachments == 0 && (leftArmTarget.transform.position - centralPoint.position).magnitude < 1.1f)
+
+        if (numberOfAttachments < 2 && (leftArmTarget.transform.position - centralPoint.position).magnitude < 1.1f)
         {
             if ((leftArmTarget.transform.position - closestTarget.transform.position).magnitude > 0.2f && (closestTarget.transform.position - leftArmTarget.transform.position).magnitude < 4f)
             {
-                if (!IKEnabled)
-                    EnableIK();
-                leftArmTarget.MoveTowards(closestTarget.transform.position, 0.01f);
+
+                EnableIK();
+                MoveLeftHandTowardsBox();
             }
         }
 
-        // move right hand
-        if (numberOfAttachments == 0 && (rightArmTarget.transform.position - centralPoint.position).magnitude < 1.1f)
+        if (numberOfAttachments < 2 && (rightArmTarget.transform.position - centralPoint.position).magnitude < 1.1f)
         {
             if ((rightArmTarget.transform.position - closestTarget.transform.position).magnitude > 2f && (closestTarget.transform.position - rightArmTarget.transform.position).magnitude < 4f)
             {
-                if (!IKEnabled)
-                    EnableIK();
-                rightArmTarget.MoveTowards(closestTarget.transform.position, 0.01f);
+                EnableIK();
+                MoveRightHandTowardsBox();
             }
         }
 
         if (numberOfAttachments == 2)
         {
-            leftArmTarget.transform.position = leftArmTarget.spawnPosition + new Vector3(0, 0.7f, 0);
-            if (!IKEnabled)
-                EnableIK();
+            leftArmTarget.transform.position = centralPoint.position + new Vector3(0, 0.7f, 0);
+            EnableIK();
         }
+
 
     }
 
@@ -153,6 +190,19 @@ public class MasterController : MonoBehaviour   // Master = Static Animation
         tmp.x = transform.rotation.eulerAngles.x;
         tmp.z = transform.rotation.eulerAngles.z;
         transform.rotation = Quaternion.Euler(tmp);
+    }
+
+
+    private void MoveLeftHandTowardsBox()
+    {
+        Vector3 direction = (closestTarget.transform.position - leftArmTarget.transform.position).normalized;
+        leftArmTarget.transform.position += direction / 80;
+    }
+
+    private void MoveRightHandTowardsBox()
+    {
+        Vector3 direction = (closestTarget.transform.position - rightArmTarget.transform.position).normalized;
+        rightArmTarget.transform.position += direction / 80;
     }
 
 }

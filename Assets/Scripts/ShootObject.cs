@@ -5,7 +5,7 @@ public class ShootObject : MonoBehaviour
 {
 
     public Rigidbody projectile;
-    private float speed = 30f;
+    private float speed = 25f;
 
 
     // Use this for initialization
