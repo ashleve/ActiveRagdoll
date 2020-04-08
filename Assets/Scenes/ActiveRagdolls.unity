@@ -272,6 +272,7 @@ GameObject:
   - component: {fileID: 146399048}
   - component: {fileID: 146399047}
   - component: {fileID: 146399046}
+  - component: {fileID: 146399050}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -291,9 +292,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0d7c0f63466e0345bfcf3af94fda5f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivity: 90
+  sensitivity: 50
   climbSpeed: 4
-  normalMoveSpeed: 10
+  normalMoveSpeed: 7.03
   slowMoveSpeed: 0.25
   fastMoveSpeed: 3
   rotationLimitsX: {x: 0, y: 0}
@@ -365,6 +366,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 6.6840005, y: 13.400001, z: 1.2470001}
+--- !u!114 &146399050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 146399045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe27ce4ad73c64b4a9349461f0b974f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectile: {fileID: 9001253124203967846, guid: 61028718cb8349e47ad84ebabb90453d,
+    type: 3}
 --- !u!1001 &185118575
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2466,6 +2481,11 @@ PrefabInstance:
     - target: {fileID: 4212423883859302795, guid: e2938808c24c9ee45a66078b017cc788,
         type: 3}
       propertyPath: m_Name
+      value: FLOOR
+      objectReference: {fileID: 0}
+    - target: {fileID: 4212423883859302795, guid: e2938808c24c9ee45a66078b017cc788,
+        type: 3}
+      propertyPath: m_TagString
       value: FLOOR
       objectReference: {fileID: 0}
     - target: {fileID: 4212423883859302805, guid: e2938808c24c9ee45a66078b017cc788,

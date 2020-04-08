@@ -23,7 +23,7 @@ public class CollisionDetector : MonoBehaviour
     private static string ATTACH_TARGET_TO_OBJECT_WITH_TAG = "HAND";
     private static string FLOOR_TAG = "FLOOR";
 
-    private static float FORCE_NEEDED_TO_DIE = 10;
+    private static float FORCE_NEEDED_TO_DIE = 15;
     private static float TIME_OF_BEING_DEAD = 3;
 
     private static float FORCE_NEEDED_TO_DROP_TARGET = 10000;

@@ -37,6 +37,7 @@ public class MasterController : MonoBehaviour
     float frontOffset;
 
 
+
     // Start is called before the first frame update
     void Start()
     {
