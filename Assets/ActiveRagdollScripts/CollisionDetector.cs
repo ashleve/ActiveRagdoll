@@ -26,7 +26,7 @@ public class CollisionDetector : MonoBehaviour
     private static float FORCE_NEEDED_TO_DIE = 15;
     private static float TIME_OF_BEING_DEAD = 3;
 
-    private static float FORCE_NEEDED_TO_DROP_TARGET = 10000;
+    private static float FORCE_NEEDED_TO_DROP_TARGET = 10;
 
 
     void Awake()

@@ -12,14 +12,13 @@ public class MasterController : MonoBehaviour
 
     public Animator anim;
     private float rotationSpeed = 0.01f;
-    private float runSpeed = 2.5f;
+    private float runSpeed = 2.8f;
     private float walkSpeed = 1.5f;
 
     public Transform slave;
     public Transform floor;
     public AnimationFollowing animFollow;
     public SlaveController slaveController;
-    public Transform IKTarget;
     public RigBuilder rigBuilder;
     public Transform box;
 
