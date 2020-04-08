@@ -663,7 +663,7 @@ GameObject:
   - component: {fileID: 662539297}
   - component: {fileID: 662539301}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Box
   m_TagString: BOX
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1618,6 +1618,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3159333886064225900, guid: 16a0ceb37645ff449aacdfaab4efa634,
+        type: 3}
+      propertyPath: maxForce
+      value: 8.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3159333886064225900, guid: 16a0ceb37645ff449aacdfaab4efa634,
+        type: 3}
+      propertyPath: maxJointTorque
+      value: 1039
       objectReference: {fileID: 0}
     - target: {fileID: 3159333886492390174, guid: 16a0ceb37645ff449aacdfaab4efa634,
         type: 3}

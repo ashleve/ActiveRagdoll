@@ -29,6 +29,10 @@ public class SlaveController : MonoBehaviour
     private float contactTorque = 0.1f;    // Minimal torque strength during collision
 
 
+    private float maxForceCoefficient = 0.8f;
+    private float maxTorqueCoefficient = 0.8f;
+
+
     // Start is called before the first frame update.
     void Start()
     {
@@ -73,8 +77,8 @@ public class SlaveController : MonoBehaviour
 
     private void GainStrength()
     {
-        animFollow.forceCoefficient = Mathf.Lerp(animFollow.forceCoefficient, 1f, fromContactLerp * Time.fixedDeltaTime);
-        animFollow.torqueCoefficient = Mathf.Lerp(animFollow.torqueCoefficient, 1f, fromContactLerp * Time.fixedDeltaTime);
+        animFollow.forceCoefficient = Mathf.Lerp(animFollow.forceCoefficient, maxForceCoefficient, fromContactLerp * Time.fixedDeltaTime);
+        animFollow.torqueCoefficient = Mathf.Lerp(animFollow.torqueCoefficient, maxTorqueCoefficient, fromContactLerp * Time.fixedDeltaTime);
     }
 
     public float InterpolateForceCoefficient(float x)
@@ -91,7 +95,7 @@ public class SlaveController : MonoBehaviour
     }
 
     // Sets all forces to zero for time given in seconds.
-    public void Die(int time)
+    public void Die(float time)
     {
         timer.Die(time);
     }
@@ -141,7 +145,7 @@ public class DeadTimer
     }
 
     // Disables animation following and wakes it up after given time.
-    public void Die(int time)
+    public void Die(float time)
     {
         slaveController.DisableAnimFollow();
         timer.Stop();
