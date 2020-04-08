@@ -1379,7 +1379,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3159333885747560214}
   - component: {fileID: 3159333885747560212}
-  - component: {fileID: 3159333885747560213}
   m_Layer: 11
   m_Name: RigRightArm
   m_TagString: Untagged
@@ -1416,19 +1415,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Weight: 1
   m_Effectors: []
---- !u!114 &3159333885747560213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3159333885747560219}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1be12f2bb59483846816668732cc08fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 3159333886492390266}
 --- !u!1 &3159333885788502507
 GameObject:
   m_ObjectHideFlags: 0
@@ -2724,6 +2710,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d121871fbd566bd40adc4d0dc06d8034, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slave: {fileID: 0}
+  master: {fileID: 0}
   isAlive: 0
   forceCoefficient: 1
   torqueCoefficient: 1
@@ -2744,10 +2732,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8da2c2e5f42df764d912332047de8740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animFollow: {fileID: 0}
-  interpolationStep: 0
   numberOfCollisions: 0
-  gettingUp: 0
+  isInGettingUpState: 0
 --- !u!1 &3159333886064225972
 GameObject:
   m_ObjectHideFlags: 0
