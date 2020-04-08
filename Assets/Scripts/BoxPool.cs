@@ -5,10 +5,10 @@ using UnityEngine;
 public class BoxPool : MonoBehaviour
 {
 
-    private int numberOfBoxes = 25;
+    private int numberOfBoxes = 40;
     private Transform[] boxes;
     public GameObject box;
-    private int i;
+    private int i = 0;
     private int spawnTime = 0;
     private float spawnDelay = 0.1f;
 
@@ -20,12 +20,6 @@ public class BoxPool : MonoBehaviour
         InvokeRepeating("SpawnObject", spawnTime, spawnDelay);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public Transform FindBox()
     {
         return boxes[Random.Range(0, i)];
@@ -34,7 +28,7 @@ public class BoxPool : MonoBehaviour
     private void SpawnObject()
     {
         if (i >= numberOfBoxes) return;
-        GameObject b = Instantiate(box, new Vector3(Random.Range(20.0f, 0.0f), Random.Range(8, 25), Random.Range(10.0f, 25.0f)), Quaternion.identity);
+        GameObject b = Instantiate(box, new Vector3(Random.Range(-10f, 20.0f), Random.Range(8, 25), Random.Range(10.0f, 35.0f)), Quaternion.identity);
         boxes[i] = b.transform;
         i++;
     }

@@ -4,10 +4,10 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - BOX
-  - FLOOR
-  - TARGET
   - HAND
+  - BOX
+  - IgnoreMe
+  - FLOOR
   layers:
   - Default
   - TransparentFX
@@ -17,9 +17,9 @@ TagManager:
   - UI
   - 
   - 
-  - Ragdoll
-  - Humanoid
-  - Floor
+  - 
+  - 
+  - 
   - 
   - 
   - 
