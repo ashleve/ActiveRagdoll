@@ -20,12 +20,6 @@ public class BoxPool : MonoBehaviour
         InvokeRepeating("SpawnObject", spawnTime, spawnDelay);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public Transform FindBox()
     {
         return boxes[Random.Range(0, i)];

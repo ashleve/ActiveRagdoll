@@ -161,7 +161,7 @@ public class AnimationFollowing : MonoBehaviour
 
             // APPLY FORCE
             Vector3 masterRigidTransformsWCOM = masterRigidTransforms[i].position + masterRigidTransforms[i].rotation * rigidbodiesPosToCOM[i];     // WCOM = World Center Of Mass
-            Vector3 forceError = masterRigidTransformsWCOM - rb.worldCenterOfMass; // Doesn't work if collider is triggered
+            Vector3 forceError = masterRigidTransformsWCOM - rb.worldCenterOfMass;
             Vector3 forceSignal = PDControl(PForce, DForce, forceError, ref forceLastError[i], Time.fixedDeltaTime);
             forceSignal = Vector3.ClampMagnitude(forceSignal, maxForce * maxForceProfile[i] * forceCoefficient);
             rb.AddForce(forceSignal, ForceMode.VelocityChange);

@@ -26,13 +26,13 @@ public class SlaveController : MonoBehaviour
     private float toContactLerp = 15f;  // Determines how fast the character loses strength when in contact
     private float fromContactLerp = 0.1f;   // Determines how fast the character gains strength after freed from contact
 
-    private float contactForce = 0.05f;  // Minimal force strength during collision
-    private float contactTorque = 0.05f;    // Minimal torque strength during collision
+    private float contactForce = 0.05f;  // Force strength during collision
+    private float contactTorque = 0.05f;    // Torque strength during collision
 
     private float maxForceCoefficient = 1f;
     private float maxTorqueCoefficient = 1f;
 
-    private float holdingBoxForceCoefficient = 0.15f;
+    private float holdingBoxForceCoefficient = 0.2f;
 
 
     // Start is called before the first frame update.
@@ -50,21 +50,24 @@ public class SlaveController : MonoBehaviour
 
         interpolationStep = 0f;
 
-        //ResetForces();
     }
 
     // Unity method for physics update.
     void FixedUpdate()
     {
+        if (masterController.handsConnected != 0)
+        {
+            if (animFollow.forceCoefficient > holdingBoxForceCoefficient)
+            {
+                LooseStrength();
+                return;
+            }
+        }
+
         if (!isInGettingUpState)
         {
             if (numberOfCollisions != 0) LooseStrength();
             else GainStrength();
-        }
-
-        if (masterController.handsConnected != 0)
-        {
-            if (animFollow.forceCoefficient > holdingBoxForceCoefficient) LooseStrength();
         }
 
         animFollow.FollowAnimation();

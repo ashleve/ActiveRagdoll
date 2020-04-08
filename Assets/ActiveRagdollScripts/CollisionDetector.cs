@@ -15,7 +15,6 @@ public class CollisionDetector : MonoBehaviour
 
     private SlaveController slaveController;
     private MasterController masterController;
-    private AnimationFollowing animFollow;
 
     private LimbState state = LimbState.TARGET_NOT_ATTACHED;
 
@@ -26,7 +25,7 @@ public class CollisionDetector : MonoBehaviour
     private static float FORCE_NEEDED_TO_DIE = 15;
     private static float TIME_OF_BEING_DEAD = 3;
 
-    private static float FORCE_NEEDED_TO_DROP_TARGET = 10;
+    private static float FORCE_NEEDED_TO_DROP_TARGET = 5000;
 
 
     void Awake()
@@ -34,7 +33,6 @@ public class CollisionDetector : MonoBehaviour
         HumanoidSetUp setUp = this.GetComponentInParent<HumanoidSetUp>();
         slaveController = setUp.GetSlaveController();
         masterController = setUp.GetMasterController();
-        animFollow = setUp.GetAnimationFollowing();
     }
 
 
@@ -66,12 +64,12 @@ public class CollisionDetector : MonoBehaviour
                 }
             }
 
-            // Die hit by enough force
+            // Die if hit by enough force
             float collisionSpeed = collision.relativeVelocity.magnitude;
             if (collisionSpeed >= FORCE_NEEDED_TO_DIE)
             {
                 slaveController.Die(TIME_OF_BEING_DEAD);
-                transform.GetComponent<Rigidbody>().AddForce(Vector3.ClampMagnitude(-1000 * collision.relativeVelocity, 500));
+                transform.GetComponent<Rigidbody>().AddForce(Vector3.ClampMagnitude(-10000 * collision.relativeVelocity, 200));
 
                 Debug.DrawRay(transform.position, collision.relativeVelocity, Color.yellow, 2f, true);
                 //Debug.Log(Vector3.ClampMagnitude(-1000 * collision.relativeVelocity, 300));

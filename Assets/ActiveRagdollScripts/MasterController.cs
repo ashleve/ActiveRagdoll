@@ -61,16 +61,12 @@ public class MasterController : MonoBehaviour
         handsConnected = 0;
 
         // This is dumb but it will make arm movement more random when grabbing boxes
-        Vector3 tmp = rightArmTarget.position;
-        tmp += new Vector3(Random.Range(0f, 0.05f), Random.Range(0f, 0.1f), Random.Range(0f, 0.3f));
-        rightArmTarget.position = tmp;
+        Vector3 offset = new Vector3(Random.Range(0f, 0.00f), Random.Range(-0.1f, 0.1f), Random.Range(0.0f, 0.55f));
+        rightArmTarget.position = rightArmTarget.position + offset;
+        leftArmTarget.position = leftArmTarget.position + offset;
 
-        tmp = leftArmTarget.position;
-        tmp += new Vector3(Random.Range(0f, 0.05f), Random.Range(0f, 0.1f), Random.Range(0f, 0.3f));
-        leftArmTarget.position = tmp;
-
-        heightOffset = Random.Range(0.5f, 0.9f);
-        frontOffset = Random.Range(0.0f, 0.3f);
+        heightOffset = Random.Range(0.5f, 0.8f);
+        frontOffset = Random.Range(0.0f, 0.2f);
     }
 
     // Update is called once per frame
