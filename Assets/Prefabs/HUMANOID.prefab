@@ -1050,6 +1050,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3159333885606004081}
+  - component: {fileID: 3773098404679816436}
   m_Layer: 0
   m_Name: HUMANOID
   m_TagString: Untagged
@@ -1073,6 +1074,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3773098404679816436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3159333885606004080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50034a24b1ace784096a6f7f44cf7e58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  masterRoot: {fileID: 3159333886492390266}
+  slaveRoot: {fileID: 3159333886064225982}
 --- !u!1 &3159333885619914109
 GameObject:
   m_ObjectHideFlags: 0
@@ -2709,8 +2724,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d121871fbd566bd40adc4d0dc06d8034, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slave: {fileID: 3159333886064225982}
-  master: {fileID: 3159333886492390266}
   isAlive: 0
   forceCoefficient: 1
   torqueCoefficient: 1
