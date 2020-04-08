@@ -26,13 +26,13 @@ public class SlaveController : MonoBehaviour
     private float toContactLerp = 15f;  // Determines how fast the character loses strength when in contact
     private float fromContactLerp = 0.1f;   // Determines how fast the character gains strength after freed from contact
 
-    private float contactForce = 0.07f;  // Minimal force strength during collision
-    private float contactTorque = 0.07f;    // Minimal torque strength during collision
+    private float contactForce = 0.05f;  // Minimal force strength during collision
+    private float contactTorque = 0.05f;    // Minimal torque strength during collision
 
     private float maxForceCoefficient = 1f;
     private float maxTorqueCoefficient = 1f;
 
-    private float holdingBoxForceCoefficient = 0.1f;
+    private float holdingBoxForceCoefficient = 0.15f;
 
 
     // Start is called before the first frame update.
@@ -128,6 +128,13 @@ public class SlaveController : MonoBehaviour
         interpolationStep = 0f;
         isInGettingUpState = true;
     }
+
+    public void DropAllBoxes()
+    {
+        CollisionDetector[] cdArr = this.GetComponentsInChildren<CollisionDetector>();
+        foreach (var cd in cdArr)
+            cd.DropTargets();
+    }
 }
 
 
@@ -158,6 +165,7 @@ public class DeadTimer
     public void Die(float time)
     {
         slaveController.DisableAnimFollow();
+        slaveController.DropAllBoxes();
         timer.Stop();
         timer.Interval = time * 1000;
         timer.Enabled = true;

@@ -12,7 +12,7 @@ public class MasterController : MonoBehaviour
 
     public Animator anim;
     private float rotationSpeed = 0.01f;
-    private float runSpeed = 3f;
+    private float runSpeed = 2.5f;
     private float walkSpeed = 1.5f;
 
     public Transform slave;

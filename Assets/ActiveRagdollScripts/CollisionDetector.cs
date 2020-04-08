@@ -22,7 +22,7 @@ public class CollisionDetector : MonoBehaviour
     private static string TARGET_TAG = "BOX";
     private static string ATTACH_TARGET_TO_OBJECT_WITH_TAG = "HAND";
 
-    private static float FORCE_NEEDED_TO_DIE = 10000;
+    private static float FORCE_NEEDED_TO_DIE = 10;
     private static float TIME_OF_BEING_DEAD = 3;
 
     private static float FORCE_NEEDED_TO_DROP_TARGET = 10000;
@@ -65,12 +65,7 @@ public class CollisionDetector : MonoBehaviour
                     collision.gameObject.GetComponent<Box>().isTaken = true;
                     collision.gameObject.GetComponent<Box>().hostID = transform.root.GetInstanceID();
 
-                    //animFollow.forceCoefficient = 0.02f;
-                    //animFollow.torqueCoefficient = 0.02f;
-
                     state = LimbState.TARGET_ATTACHED;
-
-                    return;
                 }
             }
 
@@ -79,9 +74,9 @@ public class CollisionDetector : MonoBehaviour
             if (collisionSpeed >= FORCE_NEEDED_TO_DIE)
             {
                 slaveController.Die(TIME_OF_BEING_DEAD);
-                transform.GetComponent<Rigidbody>().AddForce(Vector3.ClampMagnitude(-1000 * collision.relativeVelocity, 300));
+                transform.GetComponent<Rigidbody>().AddForce(Vector3.ClampMagnitude(-1000 * collision.relativeVelocity, 500));
 
-                Debug.DrawRay(transform.position, collision.relativeVelocity, Color.red, 2f, true);
+                Debug.DrawRay(transform.position, collision.relativeVelocity, Color.yellow, 2f, true);
                 //Debug.Log(Vector3.ClampMagnitude(-1000 * collision.relativeVelocity, 300));
             }
 
