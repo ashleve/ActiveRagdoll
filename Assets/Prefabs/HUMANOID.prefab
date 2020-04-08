@@ -2717,8 +2717,8 @@ MonoBehaviour:
   torqueCoefficient: 1
   PForce: 15
   DForce: 0.025
-  maxForce: 7.3
-  maxJointTorque: 1283
+  maxForce: 9
+  maxJointTorque: 1400
   jointDamping: 0.6
 --- !u!114 &3159333886064225875
 MonoBehaviour:

@@ -7,7 +7,7 @@ public class MasterController : MonoBehaviour
 {
 
     /// <summary>
-    /// Manages Inverse Kinematics of static animation.
+    /// Manages Inverse Kinematics and position of static animation.
     /// </summary>
 
     public Animator anim;
@@ -34,6 +34,7 @@ public class MasterController : MonoBehaviour
     public int handsConnected = 0;
 
     float heightOffset;
+    float frontOffset;
 
 
     // Start is called before the first frame update
@@ -68,7 +69,8 @@ public class MasterController : MonoBehaviour
         tmp += new Vector3(Random.Range(0f, 0.05f), Random.Range(0f, 0.1f), Random.Range(0f, 0.3f));
         leftArmTarget.position = tmp;
 
-        heightOffset = Random.Range(0.3f, 1.2f);
+        heightOffset = Random.Range(0.5f, 0.9f);
+        frontOffset = Random.Range(0.0f, 0.3f);
     }
 
     // Update is called once per frame
@@ -117,7 +119,7 @@ public class MasterController : MonoBehaviour
 
         if(handsConnected == 2)
         {
-            leftArmTarget.position = centralPoint.position + new Vector3(0, heightOffset, 0);
+            leftArmTarget.position = centralPoint.position + new Vector3(0, heightOffset, frontOffset);
             EnableIK();
         }
         // END OF SPAGHETTI

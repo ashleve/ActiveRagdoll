@@ -2444,16 +2444,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3159333886064225900, guid: 16a0ceb37645ff449aacdfaab4efa634,
-        type: 3}
-      propertyPath: maxForce
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 3159333886064225900, guid: 16a0ceb37645ff449aacdfaab4efa634,
-        type: 3}
-      propertyPath: maxJointTorque
-      value: 1400
-      objectReference: {fileID: 0}
     - target: {fileID: 3159333886492390174, guid: 16a0ceb37645ff449aacdfaab4efa634,
         type: 3}
       propertyPath: floor

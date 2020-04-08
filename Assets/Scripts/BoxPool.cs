@@ -5,7 +5,7 @@ using UnityEngine;
 public class BoxPool : MonoBehaviour
 {
 
-    private int numberOfBoxes = 25;
+    private int numberOfBoxes = 40;
     private Transform[] boxes;
     public GameObject box;
     private int i;

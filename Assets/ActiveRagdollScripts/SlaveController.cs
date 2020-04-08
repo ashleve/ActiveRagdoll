@@ -26,22 +26,21 @@ public class SlaveController : MonoBehaviour
     private float toContactLerp = 15f;  // Determines how fast the character loses strength when in contact
     private float fromContactLerp = 0.1f;   // Determines how fast the character gains strength after freed from contact
 
-    private float contactForce = 0.1f;  // Minimal force strength during collision
-    private float contactTorque = 0.1f;    // Minimal torque strength during collision
-
+    private float contactForce = 0.07f;  // Minimal force strength during collision
+    private float contactTorque = 0.07f;    // Minimal torque strength during collision
 
     private float maxForceCoefficient = 1f;
     private float maxTorqueCoefficient = 1f;
 
+    private float holdingBoxForceCoefficient = 0.1f;
 
-  /*  private float holdingBoxForceCoefficient = 0.15f;
-    private float holdingBoxTorqueCoefficient = 0.15f;*/
 
     // Start is called before the first frame update.
     void Start()
     {
         HumanoidSetUp setUp = this.GetComponentInParent<HumanoidSetUp>();
         animFollow = setUp.GetAnimationFollowing();
+        masterController = setUp.GetMasterController();
 
         timer = new DeadTimer(this);
 
@@ -61,6 +60,11 @@ public class SlaveController : MonoBehaviour
         {
             if (numberOfCollisions != 0) LooseStrength();
             else GainStrength();
+        }
+
+        if (masterController.handsConnected != 0)
+        {
+            if (animFollow.forceCoefficient > holdingBoxForceCoefficient) LooseStrength();
         }
 
         animFollow.FollowAnimation();

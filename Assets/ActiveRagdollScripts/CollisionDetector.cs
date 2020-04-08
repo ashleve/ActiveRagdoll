@@ -22,10 +22,10 @@ public class CollisionDetector : MonoBehaviour
     private static string TARGET_TAG = "BOX";
     private static string ATTACH_TARGET_TO_OBJECT_WITH_TAG = "HAND";
 
-    private static float FORCE_NEEDED_TO_DIE = 1000;
+    private static float FORCE_NEEDED_TO_DIE = 10000;
     private static float TIME_OF_BEING_DEAD = 3;
 
-    private static float FORCE_NEEDED_TO_DROP_TARGET = 1000;
+    private static float FORCE_NEEDED_TO_DROP_TARGET = 10000;
 
     private int connectedBoxId = -1;
 
@@ -46,7 +46,7 @@ public class CollisionDetector : MonoBehaviour
         if (collision.transform.name != "FLOOR" && collision.transform.root != this.transform.root)
         {
 
-            //slaveController.numberOfCollisions++;
+            slaveController.numberOfCollisions++;
 
             if (state != LimbState.TARGET_ATTACHED && collision.gameObject.tag == "BOX" && this.gameObject.tag == "HAND") 
             {
@@ -106,6 +106,7 @@ public class CollisionDetector : MonoBehaviour
         foreach (HingeJoint hj in hjArr)
         {
             Destroy(hj);
+            masterController.handsConnected--;
         }
 
         state = LimbState.TARGET_NOT_ATTACHED;
