@@ -6,6 +6,10 @@ using UnityEngine.Animations.Rigging;
 public class MasterController : MonoBehaviour
 {
 
+    /// <summary>
+    /// Manages Inverse Kinematics of static animation.
+    /// </summary>
+
     public Animator anim;
     private float rotationSpeed = 200f;
     private float runSpeed = 3f;
@@ -15,20 +19,21 @@ public class MasterController : MonoBehaviour
     public Transform floor;
     public AnimationFollowing animFollow;
     public SlaveController slaveController;
-    public Transform box;
     public Transform IKTarget;
     public RigBuilder rigBuilder;
+    public Transform box;
 
     private Quaternion deltaRotateLeft;
     private Quaternion deltaRotateRight;
 
     public Transform centralPoint;
-    //public Transform armTargetTarget;
     public Transform rightArmTarget;
     public Transform leftArmTarget;
 
     //public bool handsConnected = false;
     public int handsConnected = 0;
+
+    float heightOffset;
 
 
     // Start is called before the first frame update
@@ -43,35 +48,37 @@ public class MasterController : MonoBehaviour
         deltaRotateLeft = Quaternion.Euler(rotationLeft * Time.fixedDeltaTime);
         deltaRotateRight = Quaternion.Euler(rotationRight * Time.fixedDeltaTime);
 
-        animFollow = transform.root.GetComponentInChildren<AnimationFollowing>();
-        slaveController = transform.root.GetComponentInChildren<SlaveController>();
+        HumanoidSetUp setUp = this.GetComponentInParent<HumanoidSetUp>();
+        animFollow = setUp.GetAnimationFollowing();
+        slaveController = setUp.GetSlaveController();
         rigBuilder = transform.root.GetComponentInChildren<RigBuilder>();
 
-        //InvokeRepeating("FindBox", 4, 7);
-        Invoke("FindBox", 2);
+        InvokeRepeating("FindBox", 2f, 10); // Choose new box every 10 seconds
+        //Invoke("FindBox", 1f);
 
         DisableIK();
         handsConnected = 0;
+
+        // This is dumb but it will make arm movement more random when grabbing boxes
+        Vector3 tmp = rightArmTarget.position;
+        tmp += new Vector3(Random.Range(0f, 0.05f), Random.Range(0f, 0.1f), Random.Range(0f, 0.3f));
+        rightArmTarget.position = tmp;
+
+        tmp = leftArmTarget.position;
+        tmp += new Vector3(Random.Range(0f, 0.05f), Random.Range(0f, 0.1f), Random.Range(0f, 0.3f));
+        leftArmTarget.position = tmp;
+
+        heightOffset = Random.Range(0.3f, 1.2f);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (box == null) return;
+
+        if (!animFollow.isAlive) return;
 
         transform.position = new Vector3(transform.position.x, floor.position.y + 0.6f, transform.position.z);
-
-
-        /*
-                if (slaveController.interpolationStep < 1) return;
-
-                if(!animFollow.isAlive)
-                {
-                    transform.position = new Vector3(slave.position.x, transform.position.y, slave.position.z);
-                    Vector3 newRotation = transform.eulerAngles;
-                    newRotation.y = slave.transform.eulerAngles.y;
-                    transform.eulerAngles = newRotation;
-                }
-        */
 
 
         anim.SetInteger("Cond", 2);
@@ -79,66 +86,8 @@ public class MasterController : MonoBehaviour
         MoveForward();
 
 
-        /*
-                anim.SetInteger("Cond", 0);
-
-                // Rotation
-                if (Input.GetKey(KeyCode.A))
-                {
-                    transform.rotation = transform.rotation * deltaRotateLeft;
-                }
-                if (Input.GetKey(KeyCode.D))
-                {
-                    transform.rotation = transform.rotation * deltaRotateRight;
-                }
-
-                // Move Forward
-                if (Vector3.Magnitude(slave.position - (transform.position + transform.forward)) < 1.5f)
-                {
-                    if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.LeftShift))
-                    {
-                        anim.SetInteger("Cond", 2);
-                        transform.position += transform.forward * Time.fixedDeltaTime * runSpeed;
-                    }
-                    else if (Input.GetKey(KeyCode.W))
-                    {
-                        anim.SetInteger("Cond", 1);
-                        transform.position += transform.forward * Time.fixedDeltaTime * walkSpeed;
-                    }
-                }
-
-                if (Input.GetKey(KeyCode.S))
-                {
-                    anim.SetInteger("Cond", 1);
-                    transform.position += -transform.forward * Time.fixedDeltaTime * walkSpeed;
-                }
-        */
-
-
-
-        /*
-                Vector3 direction = (box.position - centralPoint.position).normalized;
-                armTargetTarget.position = centralPoint.position + 0.4f*direction;
-
-                rightArmTarget.position += (armTargetTarget.position - rightArmTarget.position).normalized / 1000;
-                leftArmTarget.position += (armTargetTarget.position - leftArmTarget.position).normalized / 1000;
-                //Debug.DrawRay(transform.position, collision.relativeVelocity, Color.red, 2f, true);
-        */
-
-        /*        if (handsConnected)
-                {
-                    if ((rightArmTarget.position - centralPoint.position + leftArmTarget.position - centralPoint.position).magnitude > 0.5f)
-                    {
-                        Vector3 direction = ((centralPoint.position - leftArmTarget.position).normalized + (centralPoint.position - rightArmTarget.position).normalized)/2;
-
-
-                        leftArmTarget.position += direction / 100;
-                        rightArmTarget.position += direction / 100;
-                    }
-
-                }else*/
-
         // HERE COMES THE SPAGHETTIIII
+        // those are really dumb IK rules beacause im to lazy to do it in a professional way so I just spammed if statements until it started to work
         if(handsConnected == 1)
         {
             EnableIK();
@@ -147,34 +96,32 @@ public class MasterController : MonoBehaviour
             return;
         }
 
-       
-
-            if (handsConnected < 2 && (leftArmTarget.position - centralPoint.position).magnitude < 1.1f)
+        if (handsConnected < 2 && (leftArmTarget.position - centralPoint.position).magnitude < 1.1f)
+        {
+            if((leftArmTarget.position - box.position).magnitude > 0.2f && (box.position - leftArmTarget.position).magnitude < 4f)
             {
-                if((leftArmTarget.position - box.position).magnitude > 0.2f && (box.position - leftArmTarget.position).magnitude < 4f)
-                {
 
-                    EnableIK();
-                    MoveLeftHandTowardsBox();
-                }
+                EnableIK();
+                MoveLeftHandTowardsBox();
             }
+        }
 
-            if(handsConnected < 2 && (rightArmTarget.position - centralPoint.position).magnitude < 1.1f)
+        if(handsConnected < 2 && (rightArmTarget.position - centralPoint.position).magnitude < 1.1f)
+        {
+            if ((rightArmTarget.position - box.position).magnitude > 2f && (box.position - rightArmTarget.position).magnitude < 4f) 
             {
-                if ((rightArmTarget.position - box.position).magnitude > 2f && (box.position - rightArmTarget.position).magnitude < 4f) 
-                {
-                    EnableIK();
-                    MoveRightHandTowardsBox();
-                }
+                EnableIK();
+                MoveRightHandTowardsBox();
             }
+        }
 
         if(handsConnected == 2)
         {
-            leftArmTarget.position = centralPoint.position + new Vector3(0, 0.7f, 0);
+            leftArmTarget.position = centralPoint.position + new Vector3(0, heightOffset, 0);
             EnableIK();
         }
+        // END OF SPAGHETTI
 
-        //IKTarget.position = box.position;
     }
 
     public void DisableIK()
@@ -193,14 +140,8 @@ public class MasterController : MonoBehaviour
         }
     }
 
-
-
-
-
     private void MoveForward()
     {
-       
-        //transform.position += transform.forward * Time.fixedDeltaTime * runSpeed;
         transform.position += transform.forward * Time.fixedDeltaTime * runSpeed;
     }
 
@@ -208,17 +149,9 @@ public class MasterController : MonoBehaviour
     {
         Vector3 newDirection = Vector3.RotateTowards(transform.forward, box.position - transform.position, 0.04f, 5f);
 
-        // Draw a ray pointing at our target in
+        // Draw a ray pointing at our target
         Debug.DrawRay(transform.position, box.position - transform.position, Color.red);
         
-        /*
-                // XDDD
-                //newDirection.x = transform.eulerAngles.x;
-                newDirection.y = transform.eulerAngles.y;
-                //newDirection.z = transform.eulerAngles.z;
-        */
-
-        // Calculate a rotation a step closer to the target and applies rotation to this object
         Quaternion rot = Quaternion.LookRotation(newDirection);
         Vector3 tmp = rot.eulerAngles;
         tmp.x = transform.rotation.eulerAngles.x;
@@ -243,11 +176,5 @@ public class MasterController : MonoBehaviour
     {
         box = floor.GetComponent<BoxPool>().FindBox();
     }
-
-    public void ConnectHandsToBox()
-    {
-
-    }
-
 
 }

@@ -2354,7 +2354,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3159333886062833050}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.6, y: 1.22, z: -0.04}
+  m_LocalPosition: {x: -0.6, y: 1.13, z: 0.05}
   m_LocalScale: {x: 0.18664001, y: 0.18664001, z: 0.18664001}
   m_Children: []
   m_Father: {fileID: 3159333885619914110}
@@ -2715,10 +2715,10 @@ MonoBehaviour:
   isAlive: 0
   forceCoefficient: 1
   torqueCoefficient: 1
-  PForce: 30
-  DForce: 0.01
-  maxForce: 8.4
-  maxJointTorque: 1039
+  PForce: 15
+  DForce: 0.025
+  maxForce: 7.3
+  maxJointTorque: 1283
   jointDamping: 0.6
 --- !u!114 &3159333886064225875
 MonoBehaviour:
@@ -4289,7 +4289,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3159333886151124732}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.6, y: 1.22, z: -0.04}
+  m_LocalPosition: {x: 0.6, y: 1.13, z: 0.05}
   m_LocalScale: {x: 0.18664001, y: 0.18664001, z: 0.18664001}
   m_Children: []
   m_Father: {fileID: 3159333885257567455}
@@ -5142,9 +5142,9 @@ MonoBehaviour:
   floor: {fileID: 0}
   animFollow: {fileID: 0}
   slaveController: {fileID: 0}
-  box: {fileID: 0}
   IKTarget: {fileID: 3159333886151124733}
   rigBuilder: {fileID: 0}
+  box: {fileID: 0}
   centralPoint: {fileID: 3159333886492390261}
   rightArmTarget: {fileID: 3159333886151124733}
   leftArmTarget: {fileID: 3159333886062833051}

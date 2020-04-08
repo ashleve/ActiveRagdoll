@@ -36,7 +36,6 @@ public class AnimationFollowing : MonoBehaviour
     // ALL ADJUSTABLE PARAMETERS
     private bool useGravity = true;
 
-    private float fixedDeltaTime = 1f / 0.01f;
 
     [Range(0f, 340f)] private float angularDrag = 0f; // Rigidbodies angular drag.
     [Range(0f, 2f)] private float drag = 0.1f; // Rigidbodies drag.
@@ -161,9 +160,9 @@ public class AnimationFollowing : MonoBehaviour
 
 
             // APPLY FORCE
-            Vector3 masterRigidTransformsWCOM = masterRigidTransforms[i].position + masterRigidTransforms[i].rotation * rigidbodiesPosToCOM[i];
+            Vector3 masterRigidTransformsWCOM = masterRigidTransforms[i].position + masterRigidTransforms[i].rotation * rigidbodiesPosToCOM[i];     // WCOM = World Center Of Mass
             Vector3 forceError = masterRigidTransformsWCOM - rb.worldCenterOfMass; // Doesn't work if collider is triggered
-            Vector3 forceSignal = PDControl(PForce, DForce, forceError, ref forceLastError[i], fixedDeltaTime);
+            Vector3 forceSignal = PDControl(PForce, DForce, forceError, ref forceLastError[i], Time.fixedDeltaTime);
             forceSignal = Vector3.ClampMagnitude(forceSignal, maxForce * maxForceProfile[i] * forceCoefficient);
             rb.AddForce(forceSignal, ForceMode.VelocityChange);
 
@@ -178,7 +177,7 @@ public class AnimationFollowing : MonoBehaviour
     {
         // This is the implemented algorithm:
         // theSignal = P * (theError + D * theDerivative)
-        Vector3 signal = P * (error + D * (error - lastError) * fixedDeltaTime);
+        Vector3 signal = P * (error + D * (error - lastError) / fixedDeltaTime);
         lastError = error;
         return signal;
     }

@@ -11,6 +11,7 @@ public class SlaveController : MonoBehaviour
     /// </summary>
 
     private AnimationFollowing animFollow;
+    private MasterController masterController;
 
     private DeadTimer timer;
 
@@ -29,9 +30,12 @@ public class SlaveController : MonoBehaviour
     private float contactTorque = 0.1f;    // Minimal torque strength during collision
 
 
-    private float maxForceCoefficient = 0.8f;
-    private float maxTorqueCoefficient = 0.8f;
+    private float maxForceCoefficient = 1f;
+    private float maxTorqueCoefficient = 1f;
 
+
+  /*  private float holdingBoxForceCoefficient = 0.15f;
+    private float holdingBoxTorqueCoefficient = 0.15f;*/
 
     // Start is called before the first frame update.
     void Start()
@@ -46,6 +50,8 @@ public class SlaveController : MonoBehaviour
         isInGettingUpState = false;
 
         interpolationStep = 0f;
+
+        //ResetForces();
     }
 
     // Unity method for physics update.
