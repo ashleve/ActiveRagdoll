@@ -21,13 +21,12 @@ public class CollisionDetector : MonoBehaviour
 
     private static string TARGET_TAG = "BOX";
     private static string ATTACH_TARGET_TO_OBJECT_WITH_TAG = "HAND";
+    private static string FLOOR_TAG = "FLOOR";
 
     private static float FORCE_NEEDED_TO_DIE = 10;
     private static float TIME_OF_BEING_DEAD = 3;
 
     private static float FORCE_NEEDED_TO_DROP_TARGET = 10000;
-
-    private int connectedBoxId = -1;
 
 
     void Awake()
@@ -36,19 +35,17 @@ public class CollisionDetector : MonoBehaviour
         slaveController = setUp.GetSlaveController();
         masterController = setUp.GetMasterController();
         animFollow = setUp.GetAnimationFollowing();
-
-        connectedBoxId = -1;
     }
 
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.name != "FLOOR" && collision.transform.root != this.transform.root)
+        if (collision.gameObject.tag != FLOOR_TAG && collision.transform.root != this.transform.root)
         {
 
             slaveController.numberOfCollisions++;
 
-            if (state != LimbState.TARGET_ATTACHED && collision.gameObject.tag == "BOX" && this.gameObject.tag == "HAND") 
+            if (state != LimbState.TARGET_ATTACHED && collision.gameObject.tag == TARGET_TAG && this.gameObject.tag == ATTACH_TARGET_TO_OBJECT_WITH_TAG) 
             {
                 if (!collision.gameObject.GetComponent<Box>().isTaken || collision.gameObject.GetComponent<Box>().hostID == transform.root.GetInstanceID())
                 {
@@ -85,7 +82,7 @@ public class CollisionDetector : MonoBehaviour
 
     void OnCollisionExit(Collision collision)
     {
-        if (collision.transform.name != "FLOOR" && collision.transform.root != this.transform.root)
+        if (collision.gameObject.tag != FLOOR_TAG && collision.transform.root != this.transform.root)
         {
             slaveController.numberOfCollisions--;
         }
