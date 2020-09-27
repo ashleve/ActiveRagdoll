@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
+
 public class MasterController : MonoBehaviour
 {
 
@@ -10,169 +11,65 @@ public class MasterController : MonoBehaviour
     /// Manages Inverse Kinematics and position of static animation.
     /// </summary>
 
-    public Animator anim;
-    private float rotationSpeed = 0.01f;
-    private float runSpeed = 2.8f;
-    private float walkSpeed = 1.5f;
+    
+    private CharacterController characterController;
+    public Transform camera;
 
-    public Transform slave;
-    public Transform floor;
-    public AnimationFollowing animFollow;
-    public SlaveController slaveController;
-    public RigBuilder rigBuilder;
-    public Transform box;
+    public float speed = 6;
+    public float gravity = -9.81f;
+    public float jumpHeight = 3;
+    Vector3 velocity;
+    bool isGrounded;
 
-    private Quaternion deltaRotateLeft;
-    private Quaternion deltaRotateRight;
+    public Transform groundCheck;
+    public float groundDistance = 0.4f;
+    public LayerMask groundMask;
 
-    public Transform centralPoint;
-    public Transform rightArmTarget;
-    public Transform leftArmTarget;
-
-    //public bool handsConnected = false;
-    public int handsConnected = 0;
-
-    float heightOffset;
-    float frontOffset;
-
+    float turnSmoothVelocity;
+    public float turnSmoothTime = 0.1f;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        Vector3 rotationLeft = new Vector3(0f, -rotationSpeed, 0f);
-        Vector3 rotationRight = new Vector3(0f, rotationSpeed, 0f);
-
-        rotationLeft = -rotationLeft.normalized * -rotationSpeed;
-        rotationRight = rotationRight.normalized * rotationSpeed;
-
-        deltaRotateLeft = Quaternion.Euler(rotationLeft * Time.fixedDeltaTime);
-        deltaRotateRight = Quaternion.Euler(rotationRight * Time.fixedDeltaTime);
-
-        HumanoidSetUp setUp = this.GetComponentInParent<HumanoidSetUp>();
-        animFollow = setUp.GetAnimationFollowing();
-        slaveController = setUp.GetSlaveController();
-        rigBuilder = transform.root.GetComponentInChildren<RigBuilder>();
-
-        InvokeRepeating("FindBox", 2f, 10); // Choose new box every 10 seconds
-        //Invoke("FindBox", 1f);
-
-        DisableIK();
-        handsConnected = 0;
-
-        // This is dumb but it will make arm movement more random when grabbing boxes
-        Vector3 offset = new Vector3(Random.Range(0f, 0.00f), Random.Range(-0.1f, 0.1f), Random.Range(0.0f, 0.55f));
-        rightArmTarget.position = rightArmTarget.position + offset;
-        leftArmTarget.position = leftArmTarget.position + offset;
-
-        heightOffset = Random.Range(0.5f, 0.8f);
-        frontOffset = Random.Range(0.0f, 0.2f);
+        characterController = GetComponent<CharacterController>();
     }
+
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (box == null) return;
+        //jump
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-        if (!animFollow.isAlive) return;
-
-        transform.position = new Vector3(transform.position.x, floor.position.y + 0.6f, transform.position.z);
-
-
-        anim.SetInteger("Cond", 2);
-        RotateTowards();
-        MoveForward();
-
-
-        // HERE COMES THE SPAGHETTIIII
-        // those are really dumb IK rules beacause im to lazy to do it in a professional way so I just spammed if statements until it started to work
-        if(handsConnected == 1)
+        if (isGrounded && velocity.y < 0)
         {
-            EnableIK();
-            MoveLeftHandTowardsBox();
-            MoveRightHandTowardsBox();
-            return;
+            velocity.y = -2f;
         }
 
-        if (handsConnected < 2 && (leftArmTarget.position - centralPoint.position).magnitude < 1.1f)
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            if((leftArmTarget.position - box.position).magnitude > 0.2f && (box.position - leftArmTarget.position).magnitude < 4f)
-            {
-
-                EnableIK();
-                MoveLeftHandTowardsBox();
-            }
+            velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
         }
 
-        if(handsConnected < 2 && (rightArmTarget.position - centralPoint.position).magnitude < 1.1f)
+        //gravity
+        velocity.y += gravity * Time.fixedDeltaTime;
+        characterController.Move(velocity * Time.fixedDeltaTime);
+
+        //walk
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
+
+        if (direction.magnitude >= 0.1f)
         {
-            if ((rightArmTarget.position - box.position).magnitude > 2f && (box.position - rightArmTarget.position).magnitude < 4f) 
-            {
-                EnableIK();
-                MoveRightHandTowardsBox();
-            }
+            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+            Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            characterController.Move(moveDir.normalized * speed * Time.fixedDeltaTime);
         }
-
-        if(handsConnected == 2)
-        {
-            leftArmTarget.position = centralPoint.position + new Vector3(0, heightOffset, frontOffset);
-            EnableIK();
-        }
-        // END OF SPAGHETTI
-
-    }
-
-    public void DisableIK()
-    {
-        foreach(var l in rigBuilder.layers)
-        {
-            l.active = false;
-        }
-    }
-
-    public void EnableIK()
-    {
-        foreach (var l in rigBuilder.layers)
-        {
-            l.active = true;
-        }
-    }
-
-    private void MoveForward()
-    {
-        transform.position += transform.forward * Time.fixedDeltaTime * runSpeed;
-    }
-
-    private void RotateTowards()
-    {
-        Vector3 newDirection = Vector3.RotateTowards(transform.forward, box.position - transform.position, rotationSpeed, 5f);
-
-        // Draw a ray pointing at our target
-        Debug.DrawRay(transform.position, box.position - transform.position, Color.red);
-        
-        Quaternion rot = Quaternion.LookRotation(newDirection);
-        Vector3 tmp = rot.eulerAngles;
-        tmp.x = transform.rotation.eulerAngles.x;
-        tmp.z = transform.rotation.eulerAngles.z;
-        transform.rotation = Quaternion.Euler(tmp);
-    }
-
-    private void MoveLeftHandTowardsBox()
-    {
-        Vector3 direction = (box.position - leftArmTarget.position).normalized;
-        leftArmTarget.position += direction / 80;
-    }
-
-    private void MoveRightHandTowardsBox()
-    {
-        Vector3 direction = (box.position - rightArmTarget.position).normalized;
-        rightArmTarget.position += direction / 80;
-    }
-
-
-    private void FindBox()
-    {
-        box = floor.GetComponent<BoxPool>().FindBox();
     }
 
 }

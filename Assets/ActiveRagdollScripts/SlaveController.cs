@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Timers;
+using System;
+
 
 public class SlaveController : MonoBehaviour
 {
@@ -13,13 +15,17 @@ public class SlaveController : MonoBehaviour
     private AnimationFollowing animFollow;
     private MasterController masterController;
 
+
+    [NonSerialized]
+    public int numberOfCollisions;
+    [NonSerialized]
+    public bool isInGettingUpState;
+    [NonSerialized]
+    public float interpolationStep;
+    [NonSerialized]
     private DeadTimer timer;
 
-    public int numberOfCollisions;
-
-    public bool isInGettingUpState;
-    private float interpolationStep;
-
+    
     // PARAMETERS
     private float forceInterpolationInterrval = 4f; // Time it takes for a slave to regain it's full strength (in seconds) after colliding with object
 
@@ -32,37 +38,23 @@ public class SlaveController : MonoBehaviour
     private float maxForceCoefficient = 1f;
     private float maxTorqueCoefficient = 1f;
 
-    private float holdingBoxForceCoefficient = 0.2f;
-
 
     // Start is called before the first frame update.
     void Start()
     {
         HumanoidSetUp setUp = this.GetComponentInParent<HumanoidSetUp>();
-        animFollow = setUp.GetAnimationFollowing();
-        masterController = setUp.GetMasterController();
+        animFollow = setUp.animFollow;
+        masterController = setUp.masterController;
 
         timer = new DeadTimer(this);
-
         numberOfCollisions = 0;
-
         isInGettingUpState = false;
-
         interpolationStep = 0f;
-
     }
 
     // Unity method for physics update.
     void FixedUpdate()
     {
-        if (masterController.handsConnected != 0)
-        {
-            if (animFollow.forceCoefficient > holdingBoxForceCoefficient)
-            {
-                LooseStrength();
-                return;
-            }
-        }
 
         if (!isInGettingUpState)
         {
@@ -131,13 +123,6 @@ public class SlaveController : MonoBehaviour
         interpolationStep = 0f;
         isInGettingUpState = true;
     }
-
-    public void DropAllBoxes()
-    {
-        CollisionDetector[] cdArr = this.GetComponentsInChildren<CollisionDetector>();
-        foreach (var cd in cdArr)
-            cd.DropTargets();
-    }
 }
 
 
@@ -158,20 +143,24 @@ public class DeadTimer
         timer.AutoReset = false;
     }
 
-    private void EnableAnimFollow(object source, ElapsedEventArgs e)
-    {
-        slaveController.ResetForces();
-        slaveController.EnableAnimFollow();
-    }
-
     // Disables animation following and wakes it up after given time.
     public void Die(float time)
     {
         slaveController.DisableAnimFollow();
-        slaveController.DropAllBoxes();
+        StartTimer(time);
+    }
+
+    private void StartTimer(float time)
+    {
         timer.Stop();
         timer.Interval = time * 1000;
         timer.Enabled = true;
         timer.Start();
+    }
+
+    private void EnableAnimFollow(object source, ElapsedEventArgs e)
+    {
+        slaveController.ResetForces();
+        slaveController.EnableAnimFollow();
     }
 }

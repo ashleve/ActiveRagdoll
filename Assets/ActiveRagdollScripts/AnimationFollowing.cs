@@ -1,15 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+
 
 public class AnimationFollowing : MonoBehaviour
 {
     /// <summary>
     /// Applies animation following.
     /// </summary>
-    
-    public Transform slave;     // slave root (ragdoll)
-    public Transform master;    // master root (static animation)
+
+    private Transform slave;     // slave root (ragdoll)
+    private Transform master;    // master root (static animation)
 
     // ALL TRANSFORMS
     private Transform[] slaveTransforms;
@@ -27,19 +29,19 @@ public class AnimationFollowing : MonoBehaviour
     private JointDrive jointDrive = new JointDrive();
 
     // USEFUL VARIABLES
-    public bool isAlive;
-    public float forceCoefficient; // This is set by slaveController script in real time. Controls force applied to limbs.
-    public float torqueCoefficient; // This is set by slaveController script in real time. Controls torque applied to limbs.
     private Vector3[] forceLastError;
     private int numOfRigids;
+    [NonSerialized]
+    public bool isAlive;
+    [NonSerialized]
+    public float forceCoefficient; // This is set by slaveController script in real time. Controls force applied to limbs.
+    [NonSerialized]
+    public float torqueCoefficient; // This is set by slaveController script in real time. Controls torque applied to limbs.
 
     // ALL ADJUSTABLE PARAMETERS
-    private bool useGravity = true;
-
-
-    [Range(0f, 340f)] private float angularDrag = 0f; // Rigidbodies angular drag.
-    [Range(0f, 2f)] private float drag = 0.1f; // Rigidbodies drag.
-    [Range(0f, 1000f)] private float maxAngularVelocity = 1000f; // Rigidbodies maxAngularVelocity.
+    [Range(0f, 340f)] public float angularDrag = 0f; // Rigidbodies angular drag.
+    [Range(0f, 2f)] public float drag = 0.1f; // Rigidbodies drag.
+    [Range(0f, 1000f)] public float maxAngularVelocity = 1000f; // Rigidbodies maxAngularVelocity.
 
     [Range(0f, 160f)] public float PForce = 30f;    // Proportional force of PD controller
     [Range(0f, .064f)] public float DForce = 0.01f;     // Derivative force of PD controller
@@ -47,6 +49,8 @@ public class AnimationFollowing : MonoBehaviour
     [Range(0f, 100f)] public float maxForce = 10f; // Limits the force
     [Range(0f, 10000f)] public float maxJointTorque = 10000f; // Limits the force
     [Range(0f, 10f)] public float jointDamping = .6f; // Limits the force
+
+    public bool useGravity = true;
 
     // Individual limits per limb
     // { Hips, LeftUpLeg, LeftLeg, RightUpLeg, RightLeg, Spine1, LeftArm, LeftForeArm, Head, RightArm, RightForeArm }
@@ -61,8 +65,8 @@ public class AnimationFollowing : MonoBehaviour
     void Start()
     {
         HumanoidSetUp setUp = this.GetComponentInParent<HumanoidSetUp>();
-        master = setUp.GetMasterRoot();
-        slave = setUp.GetSlaveRoot();
+        master = setUp.masterRoot;
+        slave = setUp.slaveRoot;
 
         slaveTransforms = slave.GetComponentsInChildren<Transform>(); // Get all transforms in ragdoll.
         masterTransforms = master.GetComponentsInChildren<Transform>(); // Get all transforms in master. 
@@ -157,6 +161,7 @@ public class AnimationFollowing : MonoBehaviour
             // Set rigidbody drag and angular drag in real-time
             rb.angularDrag = angularDrag; 
             rb.drag = drag;
+            rb.useGravity = useGravity;
 
 
             // APPLY FORCE
