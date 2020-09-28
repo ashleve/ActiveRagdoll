@@ -6,41 +6,49 @@ using UnityEngine;
 public class CollisionDetector : MonoBehaviour
 {
     /// <summary>
-    /// This script is attached to every limb with Rigidbody.
+    /// This script is attached to every ragdoll limb with Rigidbody.
     /// It informs SlaveController if collision occured.
-    /// It informs MasterController if target is attached. 
-    /// It also attaches target to limb using HingeJoint if limb has tag "HAND".
     /// </summary>
-    
 
+
+    // USEFUL VARIABLES
     private SlaveController slaveController;
     private MasterController masterController;
+    private LayerMask layerMask;
 
 
-
-    void Awake()
+    void Start()
     {
         HumanoidSetUp setUp = this.GetComponentInParent<HumanoidSetUp>();
         slaveController = setUp.slaveController;
         masterController = setUp.masterController;
+        layerMask = setUp.dontLooseStrengthLayerMask;
     }
 
-
-    void OnCollisionEnter(Collision collision)
+    private bool CheckIfLayerIsInLayerMask(int layer)
     {
-/*        if (collision.gameObject.tag != FLOOR_TAG && collision.transform.root != this.transform.root)
+        // from https://answers.unity.com/questions/50279/check-if-layer-is-in-layermask.html
+        // 1. I believe a layermask is a series of bools(true, false, false, true) but thirty-two of them
+        // 2. Those "<<" are telling us to take 1, and move it left x times
+        // 3. Then the "|" symbol actually ADDS that 1 at the spot.So if x = 3, we get(true, TRUE, false true)
+        // 4. And then we compare "=="
+        return layerMask == (layerMask | (1 << layer));
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!CheckIfLayerIsInLayerMask(collision.gameObject.layer))
         {
-                
-
-        }*/
+            slaveController.numberOfCollisions++;
+        }
     }
 
-    void OnCollisionExit(Collision collision)
+    private void OnCollisionExit(Collision collision)
     {
-       /* if (collision.gameObject.tag != FLOOR_TAG && collision.transform.root != this.transform.root)
+        if (!CheckIfLayerIsInLayerMask(collision.gameObject.layer))
         {
             slaveController.numberOfCollisions--;
-        }*/
+        }
     }
 
 }

@@ -5,6 +5,15 @@ using System.Timers;
 using System;
 
 
+public enum RagdollState
+{
+    FOLLOWING_ANIMATION,
+    LOOSING_STRENGTH,
+    GAINING_STRENGTH,
+    DEAD
+}
+
+
 public class SlaveController : MonoBehaviour
 {
 
@@ -55,6 +64,7 @@ public class SlaveController : MonoBehaviour
     // Unity method for physics update.
     void FixedUpdate()
     {
+        print(numberOfCollisions);
 
         if (!isInGettingUpState)
         {
@@ -163,4 +173,5 @@ public class DeadTimer
         slaveController.ResetForces();
         slaveController.EnableAnimFollow();
     }
+
 }

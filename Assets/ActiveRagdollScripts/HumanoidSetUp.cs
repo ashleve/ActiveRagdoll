@@ -6,9 +6,14 @@ public class HumanoidSetUp : MonoBehaviour
 {
 
     // THIS NEEDS TO BE SET UP IN INSPECTOR 
-    public Transform masterRoot;    // master hips
-    public Transform slaveRoot;     // slave hips
+    [Tooltip("Static animator hips.")]
+    public Transform masterRoot;
+    [Tooltip("Ragdoll hips.")]
+    public Transform slaveRoot;
+    [Tooltip("Camera following the character.")]
     public Camera characterCamera;
+    [Tooltip("Ragdoll looses strength when colliding with other objects except for objects with layers contained in this mask.")]
+    public LayerMask dontLooseStrengthLayerMask;
 
 
     // THIS IS SET UP AUTOMATICALLY
@@ -20,8 +25,6 @@ public class HumanoidSetUp : MonoBehaviour
     public AnimationFollowing animFollow;
     [NonSerialized]
     public Animator anim;
-    [NonSerialized]
-    public CharacterController characterController;
 
 
     // Awake() is called before all Start() methods
@@ -42,9 +45,6 @@ public class HumanoidSetUp : MonoBehaviour
 
         anim = this.GetComponentInChildren<Animator>();
         if (anim == null) Debug.LogError("Animator not found.");
-
-        characterController = this.GetComponentInChildren<CharacterController>();
-        if (characterController == null) Debug.LogError("CharacterController not found.");
     }
 
 }

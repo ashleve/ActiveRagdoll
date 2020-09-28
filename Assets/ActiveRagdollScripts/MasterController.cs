@@ -2,73 +2,163 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
+using System;
+using Unity.Collections;
+
+
+public enum CharacterState
+{
+    IDLE,
+    WALKING,
+    RUNNING,
+    FALLING
+}
 
 
 public class MasterController : MonoBehaviour
 {
 
     /// <summary>
-    /// Manages Inverse Kinematics and position of static animation.
+    /// Manages Inverse Kinematics, position and rotation of static animation.
     /// </summary>
 
-    
-    private CharacterController characterController;
-    public Transform camera;
 
-    public float speed = 6;
-    public float gravity = -9.81f;
-    public float jumpHeight = 3;
-    Vector3 velocity;
-    bool isGrounded;
+    // CHARACTER STATE
+    public CharacterState state;
 
-    public Transform groundCheck;
-    public float groundDistance = 0.4f;
-    public LayerMask groundMask;
 
-    float turnSmoothVelocity;
-    public float turnSmoothTime = 0.1f;
+    // PARAMETERS
+    [SerializeField]
+    private float walkSpeed = 3;
+    [SerializeField]
+    private float runSpeed = 7;
+    [SerializeField]
+    private float gravity = 9.81f;
+    [SerializeField]
+    private float turnSmoothTime = 0.3f;
+    [SerializeField]
+    private float groundDistance = 0.05f;
+    [SerializeField]
+    private LayerMask groundMask;
+
+
+    // USEFUL VARIABLES
+    private Camera characterCamera;
+    private Transform slaveRoot;
+    private Animator anim;
+    private bool isGrounded;
+    private float currentCharacterAngle;
+    private float currentTurnSmoothVelocity;
+    private float currentFallVelocity;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        characterController = GetComponent<CharacterController>();
+        HumanoidSetUp setUp = this.GetComponentInParent<HumanoidSetUp>();
+        characterCamera = setUp.characterCamera;
+        slaveRoot = setUp.slaveRoot;
+        anim = setUp.anim;
+    }
+
+    // Unity method for physics update
+    void FixedUpdate()
+    {
+        isGrounded = Physics.CheckSphere(this.transform.position, groundDistance, groundMask);
+
+        state = GetCharacterState();
+
+        if (state != CharacterState.FALLING)
+            currentFallVelocity = 0;
+
+        currentCharacterAngle = CalculateCharacterAngle();
+        SetCharacterRotation();
+        MoveCharacter();
+
+        SetAnimation();
     }
 
 
-    // Update is called once per frame
-    void FixedUpdate()
+    private CharacterState GetCharacterState()
     {
-        //jump
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
-        if (isGrounded && velocity.y < 0)
+        bool WSAD = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D);
+        if (!isGrounded)
         {
-            velocity.y = -2f;
+            return CharacterState.FALLING;
         }
-
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        else if (WSAD && Input.GetKey(KeyCode.LeftShift))
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
+            return CharacterState.RUNNING;
         }
+        else if (WSAD)
+        {
+            return CharacterState.WALKING;
+        }
+        else
+        {
+            return CharacterState.IDLE;
+        }
+    }
 
-        //gravity
-        velocity.y += gravity * Time.fixedDeltaTime;
-        characterController.Move(velocity * Time.fixedDeltaTime);
-
-        //walk
+    private float CalculateCharacterAngle()
+    {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
+
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
+        Debug.DrawRay(transform.position, direction);
 
-        if (direction.magnitude >= 0.1f)
+        float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + characterCamera.transform.eulerAngles.y;
+        float characterAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref currentTurnSmoothVelocity, turnSmoothTime);
+
+        return characterAngle;
+    }
+
+    private void MoveCharacter()
+    {
+        Vector3 moveDirection = Quaternion.Euler(0f, currentCharacterAngle, 0f) * Vector3.forward;
+        Debug.DrawRay(transform.position, moveDirection * 5, Color.red);
+        switch (state)
         {
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+            case CharacterState.FALLING:
+                currentFallVelocity -= gravity * Time.fixedDeltaTime;
+                transform.position += new Vector3(0, currentFallVelocity * Time.fixedDeltaTime, 0);
+                break;
+            case CharacterState.RUNNING:
+                transform.position += moveDirection.normalized * runSpeed * Time.fixedDeltaTime;
+                break;
+            case CharacterState.WALKING:
+                transform.position += moveDirection.normalized * walkSpeed * Time.fixedDeltaTime;
+                break;
+            case CharacterState.IDLE:
+                break;
+            default:
+                break;
+        }
+    }
 
-            Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            characterController.Move(moveDir.normalized * speed * Time.fixedDeltaTime);
+    private void SetCharacterRotation()
+    {
+        transform.rotation = Quaternion.Euler(0f, currentCharacterAngle, 0f);
+    }
+
+    private void SetAnimation()
+    {
+        switch (state)
+        {
+            case CharacterState.FALLING:
+                break;
+            case CharacterState.RUNNING:
+                anim.SetInteger("Cond", 2);
+                break;
+            case CharacterState.WALKING:
+                anim.SetInteger("Cond", 1);
+                break;
+            case CharacterState.IDLE:
+                anim.SetInteger("Cond", 0);
+                break;
+            default:
+                break;
         }
     }
 
