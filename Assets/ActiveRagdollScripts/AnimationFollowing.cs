@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 
 
@@ -9,6 +7,7 @@ public class AnimationFollowing : MonoBehaviour
     /// <summary>
     /// Applies animation following.
     /// </summary>
+
 
     private Transform slave;     // slave root (ragdoll)
     private Transform master;    // master root (static animation)
@@ -42,13 +41,15 @@ public class AnimationFollowing : MonoBehaviour
     [Range(0f, 340f)] private float angularDrag = 0f; // Rigidbodies angular drag.
     [Range(0f, 2f)] private float drag = 0.1f; // Rigidbodies drag.
     [Range(0f, 1000f)] private float maxAngularVelocity = 1000f; // Rigidbodies maxAngularVelocity.
+    [Range(0f, 10f)] private float jointDamping = 0.6f;
 
-    [Range(0f, 160f)] public float PForce = 8f;    // Proportional force of PD controller
-    [Range(0f, .064f)] public float DForce = 0.01f;     // Derivative force of PD controller
+    [Tooltip("Proportional force of PID controller.")]
+    [Range(0f, 160f)] public float PForce = 8f;
+    [Tooltip("Derivative force of PID controller.")]
+    [Range(0f, .064f)] public float DForce = 0.01f;
 
     [Range(0f, 100f)] public float maxForce = 10f; // Limits the force
     [Range(0f, 10000f)] public float maxJointTorque = 2000f; // Limits the force
-    [Range(0f, 10f)] public float jointDamping = 0.6f; // Limits the force
 
     public bool useGravity = true;
 
@@ -107,7 +108,6 @@ public class AnimationFollowing : MonoBehaviour
                     startLocalRotation[i] = t.localRotation * localToJointSpace[i];
 
                     jointDrive = cj.slerpDrive;
-                    jointDrive.mode = JointDriveMode.Position;
                     cj.slerpDrive = jointDrive;
                 }
                 else if (i != 0) // if it's not root (hips)
@@ -146,7 +146,7 @@ public class AnimationFollowing : MonoBehaviour
             SetJointTorque(maxJointTorque, jointDamping);
         }
 
-        for (int i = 0; i < slaveRigidTransforms.Length; i++) // Do for all rigid bodies of ragdoll
+        for (int i = 0; i < slaveRigidTransforms.Length; i++) // Do for all rigidbodies of ragdoll
         {
             if (!limbProfile[i]) continue;
 
@@ -210,4 +210,5 @@ public class AnimationFollowing : MonoBehaviour
             }
         }
     }
+
 }
