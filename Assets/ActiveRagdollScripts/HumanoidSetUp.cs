@@ -1,19 +1,34 @@
 ﻿using UnityEngine;
+using System;
+
 
 public class HumanoidSetUp : MonoBehaviour
 {
+    /// <summary>
+    /// All necessary setup for humanoid.
+    /// </summary>
+    
 
     // THIS NEEDS TO BE SET UP IN INSPECTOR 
-    public Transform masterRoot;    // master hips
-    public Transform slaveRoot;     // slave hips
+    [Tooltip("Static animator hips.")]
+    public Transform masterRoot;
+    [Tooltip("Ragdoll hips.")]
+    public Transform slaveRoot;
+    [Tooltip("Camera following the character.")]
+    public Camera characterCamera;
+    [Tooltip("Ragdoll looses strength when colliding with other objects except for objects with layers contained in this mask.")]
+    public LayerMask dontLooseStrengthLayerMask;
+
 
     // THIS IS SET UP AUTOMATICALLY
-    private MasterController masterController;
-    private SlaveController slaveController;
-    private AnimationFollowing animFollow;
-    private Animator anim;
-/*    private TargetManager targetManager;
-    private PlayerController playerController;*/
+    [NonSerialized]
+    public MasterController masterController;
+    [NonSerialized]
+    public SlaveController slaveController;
+    [NonSerialized]
+    public AnimationFollowing animFollow;
+    [NonSerialized]
+    public Animator anim;
 
 
     // Awake() is called before all Start() methods
@@ -21,6 +36,7 @@ public class HumanoidSetUp : MonoBehaviour
     {
         if (masterRoot == null) Debug.LogError("masterRoot not assigned.");
         if (slaveRoot == null) Debug.LogError("slaveRoot not assigned.");
+        if (characterCamera == null) Debug.LogError("characterCamera not assigned.");
 
         masterController = this.GetComponentInChildren<MasterController>();
         if (masterController == null) Debug.LogError("MasterControler not found.");
@@ -33,52 +49,6 @@ public class HumanoidSetUp : MonoBehaviour
 
         anim = this.GetComponentInChildren<Animator>();
         if (anim == null) Debug.LogError("Animator not found.");
-
-/*        targetManager = this.GetComponentInParent<TargetManager>();
-        if (targetManager == null) Debug.LogError("TargetManager not found.");
-
-        playerController = this.GetComponent<PlayerController>();
-        if (playerController == null) Debug.LogError("PlayerController not found.");*/
     }
-
-    public Transform GetMasterRoot()
-    {
-        return masterRoot;
-    }
-
-    public Transform GetSlaveRoot()
-    {
-        return slaveRoot;
-    }
-
-    public MasterController GetMasterController()
-    {
-        return masterController;
-    }
-
-    public SlaveController GetSlaveController()
-    {
-        return slaveController;
-    }
-
-    public AnimationFollowing GetAnimationFollowing()
-    {
-        return animFollow;
-    }
-
-    public Animator GetAnimator()
-    {
-        return anim;
-    }
-/*
-    public TargetManager GetTargetManager()
-    {
-        return targetManager;
-    }
-
-    public PlayerController GetPlayerController()
-    {
-        return playerController;
-    }*/
 
 }

@@ -1,15 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+
 
 public class AnimationFollowing : MonoBehaviour
 {
     /// <summary>
     /// Applies animation following.
     /// </summary>
-    
-    public Transform slave;     // slave root (ragdoll)
-    public Transform master;    // master root (static animation)
+
+    private Transform slave;     // slave root (ragdoll)
+    private Transform master;    // master root (static animation)
 
     // ALL TRANSFORMS
     private Transform[] slaveTransforms;
@@ -27,28 +29,30 @@ public class AnimationFollowing : MonoBehaviour
     private JointDrive jointDrive = new JointDrive();
 
     // USEFUL VARIABLES
-    public bool isAlive;
-    public float forceCoefficient; // This is set by slaveController script in real time. Controls force applied to limbs.
-    public float torqueCoefficient; // This is set by slaveController script in real time. Controls torque applied to limbs.
     private Vector3[] forceLastError;
     private int numOfRigids;
+    [NonSerialized]
+    public bool isAlive = true;
+    [NonSerialized]
+    public float forceCoefficient = 1.0f; // This is set by slaveController script in real time. Controls force applied to limbs.
+    [NonSerialized]
+    public float torqueCoefficient = 1.0f; // This is set by slaveController script in real time. Controls torque applied to limbs.
 
     // ALL ADJUSTABLE PARAMETERS
-    private bool useGravity = true;
-
-
     [Range(0f, 340f)] private float angularDrag = 0f; // Rigidbodies angular drag.
     [Range(0f, 2f)] private float drag = 0.1f; // Rigidbodies drag.
     [Range(0f, 1000f)] private float maxAngularVelocity = 1000f; // Rigidbodies maxAngularVelocity.
 
-    [Range(0f, 160f)] public float PForce = 30f;    // Proportional force of PD controller
+    [Range(0f, 160f)] public float PForce = 8f;    // Proportional force of PD controller
     [Range(0f, .064f)] public float DForce = 0.01f;     // Derivative force of PD controller
 
     [Range(0f, 100f)] public float maxForce = 10f; // Limits the force
-    [Range(0f, 10000f)] public float maxJointTorque = 10000f; // Limits the force
-    [Range(0f, 10f)] public float jointDamping = .6f; // Limits the force
+    [Range(0f, 10000f)] public float maxJointTorque = 2000f; // Limits the force
+    [Range(0f, 10f)] public float jointDamping = 0.6f; // Limits the force
 
-    // Individual limits per limb
+    public bool useGravity = true;
+
+    // INDIVIDUAL LIMITS PER LIMB
     // { Hips, LeftUpLeg, LeftLeg, RightUpLeg, RightLeg, Spine1, LeftArm, LeftForeArm, Head, RightArm, RightForeArm }
     private float[] maxForceProfile = { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f };
     private float[] maxJointTorqueProfile = { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f };
@@ -61,8 +65,8 @@ public class AnimationFollowing : MonoBehaviour
     void Start()
     {
         HumanoidSetUp setUp = this.GetComponentInParent<HumanoidSetUp>();
-        master = setUp.GetMasterRoot();
-        slave = setUp.GetSlaveRoot();
+        master = setUp.masterRoot;
+        slave = setUp.slaveRoot;
 
         slaveTransforms = slave.GetComponentsInChildren<Transform>(); // Get all transforms in ragdoll.
         masterTransforms = master.GetComponentsInChildren<Transform>(); // Get all transforms in master. 
@@ -92,7 +96,7 @@ public class AnimationFollowing : MonoBehaviour
                 rigidbodiesPosToCOM[i] = Quaternion.Inverse(t.rotation) * (t.GetComponent<Rigidbody>().worldCenterOfMass - t.position);
 
                 ConfigurableJoint cj = t.GetComponent<ConfigurableJoint>();
-                if (cj != null)
+                if (cj != null) // ragdoll root (hips) doesn't have configurable joint
                 {
                     slaveConfigurableJoints[i] = cj;
 
@@ -106,7 +110,7 @@ public class AnimationFollowing : MonoBehaviour
                     jointDrive.mode = JointDriveMode.Position;
                     cj.slerpDrive = jointDrive;
                 }
-                else if (i != 0) // exclude root
+                else if (i != 0) // if it's not root (hips)
                 {
                     Debug.LogWarning("Rigidbody " + t + " doesn't have configurable joint" + "\n");
                     return;
@@ -127,11 +131,6 @@ public class AnimationFollowing : MonoBehaviour
         }
 
         EnableJointLimits(true);
-
-        isAlive = true;
-        forceCoefficient = 1.0f;
-        torqueCoefficient = 1.0f;
-
     }
 
     public void FollowAnimation()
@@ -147,42 +146,41 @@ public class AnimationFollowing : MonoBehaviour
             SetJointTorque(maxJointTorque, jointDamping);
         }
 
-        for (int i = 0; i < slaveRigidTransforms.Length; i++) // Do for all rigid bodies
+        for (int i = 0; i < slaveRigidTransforms.Length; i++) // Do for all rigid bodies of ragdoll
         {
-
             if (!limbProfile[i]) continue;
 
             Rigidbody rb = slaveRigidTransforms[i].GetComponent<Rigidbody>();
 
-            // Set rigidbody drag and angular drag in real-time
-            rb.angularDrag = angularDrag; 
+            // Set rigidbody parameters in real-time
+            rb.angularDrag = angularDrag;
             rb.drag = drag;
-
+            rb.maxAngularVelocity = maxAngularVelocity;
+            rb.useGravity = useGravity;
 
             // APPLY FORCE
             Vector3 masterRigidTransformsWCOM = masterRigidTransforms[i].position + masterRigidTransforms[i].rotation * rigidbodiesPosToCOM[i];     // WCOM = World Center Of Mass
             Vector3 forceError = masterRigidTransformsWCOM - rb.worldCenterOfMass;
-            Vector3 forceSignal = PDControl(PForce, DForce, forceError, ref forceLastError[i], Time.fixedDeltaTime);
+            Vector3 forceSignal = PDControl(PForce, DForce, forceError, ref forceLastError[i]);
             forceSignal = Vector3.ClampMagnitude(forceSignal, maxForce * maxForceProfile[i] * forceCoefficient);
             rb.AddForce(forceSignal, ForceMode.VelocityChange);
 
             // APPLY ROTATION
             if (i != 0) // exclude root (hips)
                 slaveConfigurableJoints[i].targetRotation = Quaternion.Inverse(localToJointSpace[i]) * Quaternion.Inverse(masterRigidTransforms[i].localRotation) * startLocalRotation[i];
-
         }
     }
 
-    public Vector3 PDControl(float P, float D, Vector3 error, ref Vector3 lastError, float fixedDeltaTime) // A PD controller
+    private Vector3 PDControl(float P, float D, Vector3 error, ref Vector3 lastError) // A PID controller
     {
         // This is the implemented algorithm:
-        // theSignal = P * (theError + D * theDerivative)
-        Vector3 signal = P * (error + D * (error - lastError) / fixedDeltaTime);
+        // signal = P * (error + D * derivative)
+        Vector3 signal = P * (error + D * (error - lastError) / Time.fixedDeltaTime);
         lastError = error;
         return signal;
     }
 
-    public void SetJointTorque(float positionSpring, float positionDamper)
+    private void SetJointTorque(float positionSpring, float positionDamper)
     {
         for (int i = 1; i < slaveConfigurableJoints.Length; i++) // Do for all configurable joints
         {
@@ -194,7 +192,7 @@ public class AnimationFollowing : MonoBehaviour
         }
     }
 
-    public void EnableJointLimits(bool jointLimits)
+    private void EnableJointLimits(bool jointLimits)
     {
         for (int i = 1; i < slaveConfigurableJoints.Length; i++) // Do for all configurable joints
         {
@@ -212,7 +210,4 @@ public class AnimationFollowing : MonoBehaviour
             }
         }
     }
-
-
-
 }
