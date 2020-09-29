@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 57455701}
   m_LocalRotation: {x: -0, y: 0.8590493, z: -0, w: 0.5118929}
-  m_LocalPosition: {x: 4.689076, y: 2.394792, z: -0.14134455}
+  m_LocalPosition: {x: 8.2, y: 2.394792, z: 0.77}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1335305548}
@@ -56,8 +56,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 877310178}
-  m_LocalRotation: {x: 0.11391179, y: 0.8452044, z: -0.19952568, w: 0.4825381}
-  m_LocalPosition: {x: -0.00001168251, y: 0, z: 0.00000667572}
+  m_LocalRotation: {x: -0.10578048, y: -0.8639595, z: 0.20395315, w: -0.44809338}
+  m_LocalPosition: {x: -0.0000015497208, y: 0, z: -0.0000014305115}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1088017774}
@@ -130,8 +130,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 910016113}
-  m_LocalRotation: {x: 0.0913605, y: 0.8535649, z: -0.16002534, w: 0.48731112}
-  m_LocalPosition: {x: -0.000005722046, y: 0, z: 0.000002861023}
+  m_LocalRotation: {x: -0.08483895, y: -0.8725054, z: 0.16357626, w: -0.45252565}
+  m_LocalPosition: {x: -0.0000009536743, y: 0, z: -0.00000047683716}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1937066565}
@@ -205,7 +205,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 928462179}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.760378, y: 2.7677488, z: -0.023869514}
+  m_LocalPosition: {x: -1.1130038, y: 2.7677484, z: -2.4071972}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 877310180}
@@ -468,8 +468,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1335305545}
-  m_LocalRotation: {x: 0.10263946, y: 0.8496233, z: -0.1797813, w: 0.4850609}
-  m_LocalPosition: {x: -3.760378, y: 2.7677488, z: -0.023869514}
+  m_LocalRotation: {x: -0.095312804, y: -0.8684763, z: 0.18377061, w: -0.45043617}
+  m_LocalPosition: {x: -1.1130038, y: 2.7677484, z: -2.4071972}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 57455702}
@@ -598,8 +598,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1800352965}
-  m_LocalRotation: {x: 0.10263947, y: 0.8496234, z: -0.17978133, w: 0.48506087}
-  m_LocalPosition: {x: -0.000005722046, y: 0, z: 0.000002861023}
+  m_LocalRotation: {x: -0.09531279, y: -0.86847633, z: 0.18377061, w: -0.4504361}
+  m_LocalPosition: {x: -0.0000009536743, y: 0, z: -0.00000047683716}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1939280390}
@@ -3149,7 +3149,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -0.082077004, y: -0.06751716, z: -0.01599592}
+  m_ConnectedAnchor: {x: -0.082078196, y: -0.06751716, z: -0.015995443}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 0, z: 1}
   m_XMotion: 0
@@ -3368,7 +3368,6 @@ MonoBehaviour:
   DForce: 0.025
   maxForce: 9
   maxJointTorque: 1400
-  jointDamping: 0.6
   useGravity: 1
 --- !u!114 &3159333886064225875
 MonoBehaviour:
@@ -3383,11 +3382,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  toContactLerp: 1.5
-  fromContactLerp: 0.1
+  looseStrengthLerp: 1
+  gainStrengthLerp: 0.05
   minContactForce: 0.05
   minContactTorque: 0.2
-  deadTime: 3
+  deadTime: 4
 --- !u!1 &3159333886064225972
 GameObject:
   m_ObjectHideFlags: 0
@@ -3462,7 +3461,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.0000005915507, y: 0.20265031, z: -0.008693154}
+  m_ConnectedAnchor: {x: -0.00000036212367, y: 0.20265031, z: -0.008692796}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 0, z: 1}
   m_XMotion: 0
@@ -3621,7 +3620,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.000000037713278, y: -0.44370535, z: 0.002860834}
+  m_ConnectedAnchor: {x: 0.0000002761319, y: -0.44370535, z: 0.0028615491}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 0, z: 1}
   m_XMotion: 0
@@ -3780,7 +3779,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.08207967, y: -0.06751692, z: -0.015994482}
+  m_ConnectedAnchor: {x: 0.08207872, y: -0.067516446, z: -0.015995197}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 0, z: 1}
   m_XMotion: 0
@@ -3939,7 +3938,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.0000005665015, y: -0.4437043, z: 0.0028461954}
+  m_ConnectedAnchor: {x: 0.0000003280823, y: -0.44370478, z: 0.002846552}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 0, z: 1}
   m_XMotion: 0
@@ -4099,7 +4098,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 1, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.15162861, y: 0.19521418, z: -0.062335566}
+  m_ConnectedAnchor: {x: 0.15162933, y: 0.1952137, z: -0.062335327}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 0, z: 1}
   m_XMotion: 0
@@ -4259,7 +4258,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.0000008279041, y: 0.3538951, z: -0.022045458}
+  m_ConnectedAnchor: {x: -0.0000010794446, y: 0.35389557, z: -0.022046054}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 0, z: 1}
   m_XMotion: 0
@@ -4419,7 +4418,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -0.2784145, y: -0.0000009729033, z: 0.0000008754432}
+  m_ConnectedAnchor: {x: -0.27841616, y: -0.000000972909, z: 0.00000004097819}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0
@@ -4578,7 +4577,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 1, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -0.15162766, y: 0.19521418, z: -0.062335566}
+  m_ConnectedAnchor: {x: -0.15162885, y: 0.19521418, z: -0.062335446}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 0, z: 1}
   m_XMotion: 0
@@ -4738,7 +4737,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.2784164, y: -0.0000006683655, z: 0.0000004786998}
+  m_ConnectedAnchor: {x: 0.2784145, y: -0.00000019152849, z: 0.0000000018626505}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0
@@ -5700,8 +5699,10 @@ MonoBehaviour:
   walkSpeed: 3
   runSpeed: 7
   gravity: 9.81
-  turnSmoothTime: 0.4
+  turnSmoothTime: 0.35
   groundDistance: 0.2
+  pushBackSpeed: 7
+  maxPossibleDistanceFromRagdoll: 2
   groundMask:
     serializedVersion: 2
     m_Bits: 1024

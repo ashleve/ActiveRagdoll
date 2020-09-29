@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 
 
@@ -27,10 +25,10 @@ public class SlaveController : MonoBehaviour
     // PARAMETERS
     [SerializeField]
     [Tooltip("Determines how fast ragdoll loses strength when in contact.")]
-    private float toContactLerp = 1.0f;
+    private float looseStrengthLerp = 1.0f;
     [SerializeField]
     [Tooltip("Determines how fast ragdoll gains strength after being freed from contact.")]
-    private float fromContactLerp = 0.05f;
+    private float gainStrengthLerp = 0.05f;
     [SerializeField]
     [Tooltip("Minimum force strength during collision.")]
     private float minContactForce = 0.1f;
@@ -39,11 +37,10 @@ public class SlaveController : MonoBehaviour
     private float minContactTorque = 0.1f;
     [SerializeField]
     [Tooltip("Time of being dead expressed in seconds passed in sumulation.")]
-    private float deadTime = 3.0f;
+    private float deadTime = 4.0f;
 
 
     // USEFUL VARIABLES
-    private MasterController masterController;
     private AnimationFollowing animFollow;
     private float maxTorqueCoefficient;
     private float maxForceCoefficient;
@@ -56,7 +53,6 @@ public class SlaveController : MonoBehaviour
     void Start()
     {
         HumanoidSetUp setUp = this.GetComponentInParent<HumanoidSetUp>();
-        masterController = setUp.masterController;
         animFollow = setUp.animFollow;
 
         maxForceCoefficient = animFollow.forceCoefficient;
@@ -72,7 +68,7 @@ public class SlaveController : MonoBehaviour
         // Apply animation following
         animFollow.FollowAnimation();
 
-        // print(currentNumberOfCollisions
+        // print(currentNumberOfCollisions);
         // print(animFollow.forceCoefficient);
 
         state = GetRagdollState();
@@ -123,14 +119,14 @@ public class SlaveController : MonoBehaviour
 
     private void LooseStrength()
     {
-        currentStrength -= toContactLerp * Time.fixedDeltaTime;
+        currentStrength -= looseStrengthLerp * Time.fixedDeltaTime;
         currentStrength = Mathf.Clamp(currentStrength, 0, 1);
         InterpolateStrength(currentStrength);
     }
 
     private void GainStrength()
     {
-        currentStrength += fromContactLerp * Time.fixedDeltaTime;
+        currentStrength += gainStrengthLerp * Time.fixedDeltaTime;
         currentStrength = Mathf.Clamp(currentStrength, 0, 1);
         InterpolateStrength(currentStrength);
     }

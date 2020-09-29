@@ -12,7 +12,7 @@ public class ShootObject : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             ShootProjectile();
         }
