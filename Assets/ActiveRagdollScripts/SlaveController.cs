@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Timers;
 using System;
 
 
@@ -16,162 +15,153 @@ public enum RagdollState
 
 public class SlaveController : MonoBehaviour
 {
-
     /// <summary>
-    /// Controlls animation following.
+    /// Controlls Ragdoll.
     /// </summary>
 
-    private AnimationFollowing animFollow;
-    private MasterController masterController;
+
+    // RAGDOLL STATE
+    public RagdollState state;
 
 
-    [NonSerialized]
-    public int numberOfCollisions;
-    [NonSerialized]
-    public bool isInGettingUpState;
-    [NonSerialized]
-    public float interpolationStep;
-    [NonSerialized]
-    private DeadTimer timer;
-
-    
     // PARAMETERS
-    private float forceInterpolationInterrval = 4f; // Time it takes for a slave to regain it's full strength (in seconds) after colliding with object
+    [SerializeField]
+    [Tooltip("Determines how fast ragdoll loses strength when in contact.")]
+    private float toContactLerp = 1.0f;
+    [SerializeField]
+    [Tooltip("Determines how fast ragdoll gains strength after being freed from contact.")]
+    private float fromContactLerp = 0.05f;
+    [SerializeField]
+    [Tooltip("Minimum force strength during collision.")]
+    private float minContactForce = 0.1f;
+    [SerializeField]
+    [Tooltip("Minimum torque strength during collision.")]
+    private float minContactTorque = 0.1f;
+    [SerializeField]
+    [Tooltip("Time of being dead expressed in seconds passed in sumulation.")]
+    private float deadTime = 3.0f;
 
-    private float toContactLerp = 15f;  // Determines how fast the character loses strength when in contact
-    private float fromContactLerp = 0.1f;   // Determines how fast the character gains strength after freed from contact
 
-    private float contactForce = 0.05f;  // Force strength during collision
-    private float contactTorque = 0.05f;    // Torque strength during collision
-
-    private float maxForceCoefficient = 1f;
-    private float maxTorqueCoefficient = 1f;
+    // USEFUL VARIABLES
+    private MasterController masterController;
+    private AnimationFollowing animFollow;
+    private float maxTorqueCoefficient;
+    private float maxForceCoefficient;
+    private float currentDeadStep;
+    private float currentStrength;
+    [NonSerialized] public int currentNumberOfCollisions;
 
 
     // Start is called before the first frame update.
     void Start()
     {
         HumanoidSetUp setUp = this.GetComponentInParent<HumanoidSetUp>();
-        animFollow = setUp.animFollow;
         masterController = setUp.masterController;
+        animFollow = setUp.animFollow;
 
-        timer = new DeadTimer(this);
-        numberOfCollisions = 0;
-        isInGettingUpState = false;
-        interpolationStep = 0f;
+        maxForceCoefficient = animFollow.forceCoefficient;
+        maxTorqueCoefficient = animFollow.torqueCoefficient;
+        currentNumberOfCollisions = 0;
+        currentDeadStep = deadTime;
+        currentStrength = 1.0f;
     }
 
     // Unity method for physics update.
     void FixedUpdate()
     {
-        print(numberOfCollisions);
-
-        if (!isInGettingUpState)
-        {
-            if (numberOfCollisions != 0) LooseStrength();
-            else GainStrength();
-        }
-
+        // Apply animation following
         animFollow.FollowAnimation();
 
-        if (isInGettingUpState)
-        {
-            animFollow.SetJointTorque(0, 0);
-            IncrementInterpolationStep();
-            animFollow.forceCoefficient = InterpolateForceCoefficient(interpolationStep);
-            animFollow.torqueCoefficient = InterpolateForceCoefficient(interpolationStep);
-        }
+        // print(currentNumberOfCollisions
+        // print(animFollow.forceCoefficient);
 
+        state = GetRagdollState();
+        switch (state)
+        {
+            case RagdollState.DEAD:
+                currentDeadStep += Time.fixedDeltaTime;
+                if (currentDeadStep >= deadTime)
+                    ComeAlive();
+                break;
+
+            case RagdollState.LOOSING_STRENGTH:
+                LooseStrength();
+                break;
+
+            case RagdollState.GAINING_STRENGTH:
+                GainStrength();
+                break;
+            
+            case RagdollState.FOLLOWING_ANIMATION:
+                break;
+
+            default:
+                break;
+        }
+    }
+     
+
+    private RagdollState GetRagdollState()
+    {
+        if (!animFollow.isAlive)
+        {
+            return RagdollState.DEAD;
+        }
+        else if (currentNumberOfCollisions != 0)
+        {
+            return RagdollState.LOOSING_STRENGTH;
+        }
+        else if (currentStrength < 1)
+        {
+            return RagdollState.GAINING_STRENGTH;
+        }
+        else
+        {
+            return RagdollState.FOLLOWING_ANIMATION;
+        }
     }
 
     private void LooseStrength()
     {
-        animFollow.forceCoefficient = Mathf.Lerp(animFollow.forceCoefficient, contactForce, toContactLerp * Time.fixedDeltaTime);
-        animFollow.torqueCoefficient = Mathf.Lerp(animFollow.torqueCoefficient, contactTorque, toContactLerp * Time.fixedDeltaTime);
+        currentStrength -= toContactLerp * Time.fixedDeltaTime;
+        currentStrength = Mathf.Clamp(currentStrength, 0, 1);
+        InterpolateStrength(currentStrength);
     }
 
     private void GainStrength()
     {
-        animFollow.forceCoefficient = Mathf.Lerp(animFollow.forceCoefficient, maxForceCoefficient, fromContactLerp * Time.fixedDeltaTime);
-        animFollow.torqueCoefficient = Mathf.Lerp(animFollow.torqueCoefficient, maxTorqueCoefficient, fromContactLerp * Time.fixedDeltaTime);
+        currentStrength += fromContactLerp * Time.fixedDeltaTime;
+        currentStrength = Mathf.Clamp(currentStrength, 0, 1);
+        InterpolateStrength(currentStrength);
     }
 
-    public float InterpolateForceCoefficient(float x)
+    private void InterpolateStrength(float ratio)
     {
-        return (float)(0.0001804733 + 0.7707137 * x - 8.36575 * Mathf.Pow(x, 2) + 30.10769 * Mathf.Pow(x, 3) - 42.97538 * Mathf.Pow(x, 4) + 21.46389 * Mathf.Pow(x, 5));
+        animFollow.forceCoefficient = Mathf.Lerp(minContactForce, maxForceCoefficient, ratio);
+        animFollow.torqueCoefficient = Mathf.Lerp(minContactTorque, maxTorqueCoefficient, ratio);
     }
 
-    public void IncrementInterpolationStep()
+    [ContextMenu("Die")]
+    private void Die()
     {
-        if (interpolationStep >= 1f)
-            return;
-
-        interpolationStep += Time.fixedDeltaTime * 1f / forceInterpolationInterrval;
+        animFollow.isAlive = false;
+        currentDeadStep = 0;
+        ResetForces();
     }
 
-    // Sets all forces to zero for time given in seconds.
-    public void Die(float time)
-    {
-        timer.Die(time);
-    }
-
-    public void EnableAnimFollow()
+    [ContextMenu("Come alive")]
+    private void ComeAlive()
     {
         animFollow.isAlive = true;
     }
 
-    public void DisableAnimFollow()
-    {
-        animFollow.isAlive = false;
-    }
-
-    // Sets forces to zero. After calling this function ragdoll will gradually regain strength.
-    public void ResetForces()
+    // Sets animation following forces to zero. After calling this method, ragdoll will gradually regain strength.
+    [ContextMenu("Reset forces")]
+    private void ResetForces()
     {
         animFollow.forceCoefficient = 0f;
         animFollow.torqueCoefficient = 0f;
-        interpolationStep = 0f;
-        isInGettingUpState = true;
-    }
-}
-
-
-public class DeadTimer
-{
-    /// <summary>
-    /// A class for making ragdoll "dead" for specified time.
-    /// </summary>
-
-    private SlaveController slaveController;
-    private Timer timer;
-
-    public DeadTimer(SlaveController slaveController)
-    {
-        this.slaveController = slaveController;
-        timer = new Timer();
-        timer.Elapsed += new ElapsedEventHandler(EnableAnimFollow);
-        timer.AutoReset = false;
-    }
-
-    // Disables animation following and wakes it up after given time.
-    public void Die(float time)
-    {
-        slaveController.DisableAnimFollow();
-        StartTimer(time);
-    }
-
-    private void StartTimer(float time)
-    {
-        timer.Stop();
-        timer.Interval = time * 1000;
-        timer.Enabled = true;
-        timer.Start();
-    }
-
-    private void EnableAnimFollow(object source, ElapsedEventArgs e)
-    {
-        slaveController.ResetForces();
-        slaveController.EnableAnimFollow();
+        currentStrength = 0;
     }
 
 }

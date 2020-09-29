@@ -4,6 +4,10 @@ using System;
 
 public class HumanoidSetUp : MonoBehaviour
 {
+    /// <summary>
+    /// All necessary setup for humanoid.
+    /// </summary>
+    
 
     // THIS NEEDS TO BE SET UP IN INSPECTOR 
     [Tooltip("Static animator hips.")]

@@ -17,9 +17,8 @@ public enum CharacterState
 
 public class MasterController : MonoBehaviour
 {
-
     /// <summary>
-    /// Manages Inverse Kinematics, position and rotation of static animation.
+    /// Third person controller for static animator.
     /// </summary>
 
 

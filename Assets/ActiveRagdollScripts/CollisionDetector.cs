@@ -6,14 +6,13 @@ using UnityEngine;
 public class CollisionDetector : MonoBehaviour
 {
     /// <summary>
-    /// This script is attached to every ragdoll limb with Rigidbody.
+    /// This script is attached automatically to every ragdoll limb with Rigidbody.
     /// It informs SlaveController if collision occured.
     /// </summary>
 
 
     // USEFUL VARIABLES
     private SlaveController slaveController;
-    private MasterController masterController;
     private LayerMask layerMask;
 
 
@@ -21,7 +20,6 @@ public class CollisionDetector : MonoBehaviour
     {
         HumanoidSetUp setUp = this.GetComponentInParent<HumanoidSetUp>();
         slaveController = setUp.slaveController;
-        masterController = setUp.masterController;
         layerMask = setUp.dontLooseStrengthLayerMask;
     }
 
@@ -39,7 +37,7 @@ public class CollisionDetector : MonoBehaviour
     {
         if (!CheckIfLayerIsInLayerMask(collision.gameObject.layer))
         {
-            slaveController.numberOfCollisions++;
+            slaveController.currentNumberOfCollisions++;
         }
     }
 
@@ -47,7 +45,7 @@ public class CollisionDetector : MonoBehaviour
     {
         if (!CheckIfLayerIsInLayerMask(collision.gameObject.layer))
         {
-            slaveController.numberOfCollisions--;
+            slaveController.currentNumberOfCollisions--;
         }
     }
 
