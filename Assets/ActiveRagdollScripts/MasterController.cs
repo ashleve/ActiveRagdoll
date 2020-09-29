@@ -105,7 +105,6 @@ public class MasterController : MonoBehaviour
         float vertical = Input.GetAxisRaw("Vertical");
 
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
-        Debug.DrawRay(transform.position, direction);
 
         float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + characterCamera.transform.eulerAngles.y;
         float characterAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref currentTurnSmoothVelocity, turnSmoothTime);
