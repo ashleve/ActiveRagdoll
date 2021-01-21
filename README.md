@@ -6,7 +6,7 @@
 ## What is this?
 #### This is a simple third person controller for active ragdoll driven by static animations.
 
-It uses similar techniques as games like [TABS](https://www.youtube.com/watch?v=Z2e9vd3Znz4) or [Human Fall Flat](https://www.youtube.com/watch?v=-Edk59BqSEU).
+It uses similar techniques as games like [TABS](https://www.youtube.com/watch?v=Z2e9vd3Znz4).
 
 It's designed to be as simple as possible.
 
