@@ -23,4 +23,3 @@ It's designed to be as simple as possible.
 
 ![](gifs/skielete.gif)
 
-*Work in progress.*
